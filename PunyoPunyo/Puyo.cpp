@@ -159,7 +159,7 @@ void Puyo::InputMove()
 		Keyflag_left = true;
 		
 	}
-	if (_Key == ' ')
+	if (_UpKey == ' ')
 	{
 		Turn();
 	}
@@ -175,6 +175,8 @@ void Puyo::Turn()
 	SceneIngame* Scene = SceneIngame::getInstance();
 	//TODO TurnCount == 1 —Ž‚¿‚½‚Æ‚« Á‚¦‚é
 	
+	if (!Scene->turned)
+	{
 		if (Scene->map[pos._y + 1][pos._x] != nullptr)
 		{
 			if (Scene->map[pos._y + 1][pos._x + 1] == nullptr&&pos._x < 6)
@@ -183,11 +185,12 @@ void Puyo::Turn()
 				pos._x++;
 				pos._y++;
 				map(pos._x, pos._y, STATE_FALL);
-				return;
+				Scene->turned = true;
+				return; 
 			}
 		}
 
-		if (Scene->map[pos._y][pos._x - 1] != nullptr)
+		else if (Scene->map[pos._y][pos._x - 1] != nullptr)
 		{
 			if (Scene->map[pos._y + 1][pos._x - 1] == nullptr)
 			{
@@ -195,11 +198,12 @@ void Puyo::Turn()
 				pos._x--;
 				pos._y++;
 				map(pos._x, pos._y, STATE_FALL);
+				Scene->turned = true;
 				return;
 			}
 		}
 
-		if (Scene->map[pos._y - 1][pos._x] != nullptr)
+		else if (Scene->map[pos._y - 1][pos._x] != nullptr)
 		{
 			if (Scene->map[pos._y - 1][pos._x - 1] == nullptr&&pos._x > 1)
 			{
@@ -207,11 +211,12 @@ void Puyo::Turn()
 				pos._x--;
 				pos._y--;
 				map(pos._x, pos._y, STATE_FALL);
+				Scene->turned = true;
 				return;
 			}
 		}
 
-		if (Scene->map[pos._y][pos._x + 1] != nullptr)
+		else if (Scene->map[pos._y][pos._x + 1] != nullptr)
 		{
 			if (Scene->map[pos._y - 1][pos._x + 1] == nullptr)
 			{
@@ -219,9 +224,12 @@ void Puyo::Turn()
 				pos._x++;
 				pos._y--;
 				map(pos._x, pos._y, STATE_FALL);
+				Scene->turned = true;
 				return;
 			}
 		}
+
+	}
 		
 	
 }

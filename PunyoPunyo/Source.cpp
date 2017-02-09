@@ -29,6 +29,7 @@ int main(int argc, char* argv[])
 	//glutJoystickFunc(JoyStick, 0);
 
 	glutKeyboardFunc(Key);
+	glutKeyboardUpFunc(UpKey);
 	glutSpecialFunc(SpecialKey);
 	
 	glutMainLoop();

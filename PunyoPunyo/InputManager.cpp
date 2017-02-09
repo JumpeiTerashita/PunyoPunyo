@@ -38,6 +38,7 @@ void SpecialKey(int key, int x, int y)
 void KeyEventReset()
 {
 	_Key = 0;
+	_UpKey = 0;
 	_SpecialKey = 0;
 }
 

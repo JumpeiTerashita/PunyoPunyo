@@ -1,8 +1,8 @@
-﻿  Puyo.cpp
+﻿  InputManager.cpp
   コード生成しています。
-  3 of 175 functions ( 1.7%) were compiled, the rest were copied from previous compilation.
+  8 of 176 functions ( 4.5%) were compiled, the rest were copied from previous compilation.
     0 functions were new in current compilation
-    2 functions had inline decision re-evaluated but remain unchanged
+    1 functions had inline decision re-evaluated but remain unchanged
   コード生成が終了しました。
   Puyo!.vcxproj -> C:\Users\vantan\Documents\Atelier\Children\PunyoPunyo\Release\PunyoPunyo.exe
   Puyo!.vcxproj -> C:\Users\vantan\Documents\Atelier\Children\PunyoPunyo\Release\PunyoPunyo.pdb (Full PDB)
