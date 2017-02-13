@@ -5,7 +5,8 @@
 
 SceneIngame::SceneIngame()
 {
-
+	First = nullptr;
+	Second = nullptr;
 	pFile = fopen(
 		"Brick.data", // const char * _Filename
 		"rb");      // const char * _Mode

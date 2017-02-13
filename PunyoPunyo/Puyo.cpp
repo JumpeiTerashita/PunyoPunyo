@@ -6,13 +6,13 @@
 #include "GameManager.h"
 #include "InputManager.h"
 
-Puyo::Puyo(int _x, int _y,int _colors)
+Puyo::Puyo(int _x, int _y, int _colors)
 {
 	setLifeTime(1);
 	_state = STATE_FALL;
 	_is_checked = false;
 
-	
+
 	pos.set(_x, _y);
 	ColorNumber = (COLORPATTERN)(rand() % _colors);
 	ColorSetup(ColorNumber);
@@ -26,7 +26,7 @@ Puyo::Puyo(int _x, int _y, STATE _seq, COLORPATTERN _colorNumber)
 	_state = _seq;
 	_is_checked = false;
 
-	
+
 	pos.set(_x, _y);
 	ColorNumber = _colorNumber;
 
@@ -37,6 +37,7 @@ Puyo::Puyo(int _x, int _y, STATE _seq, COLORPATTERN _colorNumber)
 void Puyo::ObjUpdate()
 {
 	runSequence();
+	setLogicPriority(pos._y);
 }
 
 
@@ -55,16 +56,30 @@ void Puyo::map(int _x, int _y, STATE _seq)
 void Puyo::Fall()
 {
 	SceneIngame* Scene = SceneIngame::getInstance();
+	if (_state == STATE_FREEFALL) setSequence(&Puyo::FreeFall);
 
 	if (Keyflag_left)
 	{
+		//TODO c‚Ì‚Æ‚«‚Ì‰¡ˆÚ“®@‚¿‚¬‚èƒiƒV
+		//c‚Ì‚Æ‚«‚Ì‰¡ˆÚ“®
+		/*if (Scene->map[pos._y + 1][pos._x] != nullptr || Scene->map[pos._y - 1][pos._x] != nullptr)
+		{
+			if (Scene->map[pos._y][pos._x - 1] == nullptr&&pos._x > 1)
+			{
+				delMap(pos._x, pos._y);
+				pos._x--;
+				map(pos._x, pos._y, STATE_FALL);
+			}
+			Keyflag_left = false;
+		}
+		else*/ 
 		if (Scene->map[pos._y][pos._x - 1] == nullptr)
 		{
 			if (pos._x > 1)
 			{
 				delMap(pos._x, pos._y);
 				pos._x--;
-				map(pos._x, pos._y, STATE_FALL); 
+				map(pos._x, pos._y, STATE_FALL);
 			}
 		}
 		else
@@ -79,7 +94,7 @@ void Puyo::Fall()
 				}
 			}
 		}
-		addFrame(-20);
+		//addFrame(-20);
 		Keyflag_left = false;
 	}
 
@@ -106,9 +121,9 @@ void Puyo::Fall()
 				}
 			}
 		}
-		addFrame(-20);
+		//addFrame(-20);
 		Keyflag_right = false;
-		
+
 	}
 
 
@@ -122,20 +137,20 @@ void Puyo::Fall()
 			setFrame(0);
 			map(pos._x, pos._y, STATE_FALL);
 		}
-		else if (pos._x==3&&pos._y>=11)
+		else if (pos._x == 3 && pos._y >= 11)
 		{
 			if (Scene->map[pos._y - 1][pos._x] != nullptr&&Scene->map[pos._y - 1][pos._x]->_state != STATE_FALL)
 			{
 				Scene->GameOver = true;
 			}
-				
+
 		}
-		
+
 	}
 
 	InputMove();
 
-	
+
 }
 
 void Puyo::InputMove()
@@ -143,27 +158,27 @@ void Puyo::InputMove()
 	SceneIngame* Scene = SceneIngame::getInstance();
 	int FallPuyoCount = Scene->Search_States_are(STATE_FALL);
 	printf("\n%d\n", FallPuyoCount);
-	if (FallPuyoCount == 1)
-	{
-		addFrame(15);
-		return;
-	}
-	if (_SpecialKey == GLUT_KEY_RIGHT||_Key == 'd')
+	//if (FallPuyoCount == 1)
+	//{
+		//addFrame(15);
+		//return;
+	//}
+	if (_SpecialKey == GLUT_KEY_RIGHT || _Key == 'd')
 		//(input.AnalogX > 700 && getFrame() % 60 == 0)
 	{
 		Keyflag_right = true;
-		
+
 	}
 	if (_SpecialKey == GLUT_KEY_LEFT || _Key == 'a')
 	{
 		Keyflag_left = true;
-		
+
 	}
 	if (_UpKey == ' ')
 	{
 		Turn();
 	}
-	if (_SpecialKey == GLUT_KEY_DOWN||_Key=='s')
+	if (_SpecialKey == GLUT_KEY_DOWN || _Key == 's')
 	{
 		Scene->ScoreCounter += 0.5;
 		addFrame(60);
@@ -174,7 +189,7 @@ void Puyo::Turn()
 {
 	SceneIngame* Scene = SceneIngame::getInstance();
 	//TODO TurnCount == 1 —Ž‚¿‚½‚Æ‚« Á‚¦‚é
-	
+
 	if (!Scene->turned)
 	{
 		if (Scene->map[pos._y + 1][pos._x] != nullptr)
@@ -186,7 +201,7 @@ void Puyo::Turn()
 				pos._y++;
 				map(pos._x, pos._y, STATE_FALL);
 				Scene->turned = true;
-				return; 
+				return;
 			}
 		}
 
@@ -230,8 +245,8 @@ void Puyo::Turn()
 		}
 
 	}
-		
-	
+
+
 }
 
 void Puyo::FreeFall()
@@ -276,20 +291,21 @@ bool Puyo::UnderCollision()
 	}
 	else if ((Scene->map[pos._y - 1][pos._x] != nullptr) && (Scene->map[pos._y - 1][pos._x]->_state == STATE_FALL))
 	{
-		if (pos._y > 1 && Scene->map[pos._y - 2][pos._x] == nullptr)
+		/*if (pos._y > 1 && Scene->map[pos._y - 2][pos._x] == nullptr)
 		{
 			return true;
 		}
-		else if (pos._y ==1|| Scene->map[pos._y - 2][pos._x] != nullptr)
+		else */
+		if (pos._y == 1 || Scene->map[pos._y - 2][pos._x] != nullptr)
 		{
 			_state = STATE_SET;
 			map(pos._x, pos._y, STATE_SET);
 			setLifeTime(0);
 			return true;
 		}
-		
+
 	}
-	
+
 	return false;
 }
 
@@ -305,6 +321,7 @@ void Puyo::ObjDisp()
 	}
 	glPopMatrix();
 	glColor4f(1, 1, 1, 1);
+	setRenderPriority(pos._y);
 }
 
 void Puyo::ColorSetup(COLORPATTERN _colorNumber)

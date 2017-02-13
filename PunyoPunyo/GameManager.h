@@ -24,12 +24,19 @@ public:
 
 	int HighScore;
 	
+	std::list< GameObject* > getObjects();
 
 private:
 	static GameManager* instance;
 	std::list< GameObject* > objects;
-
 	
+	static bool sortLogicPriority(const GameObject* objA, const GameObject* objB) {
+		return objA->getLogicPriority() < objB->getLogicPriority(); //小さい順ソート
+	}
+
+	static bool sortRenderPriority(const GameObject* objA, const GameObject* objB) {
+		return objA->getRenderPriority() < objB->getRenderPriority(); //小さい順ソート
+	}
 };
 
 //TODO class SceneIngame を　別ファイルに引っ越し

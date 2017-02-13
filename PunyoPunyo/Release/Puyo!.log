@@ -1,8 +1,12 @@
-﻿  InputManager.cpp
+﻿  GameManager.cpp
+  GameObject.cpp
+  Puyo.cpp
+  Scene_InGame.cpp
+  Source.cpp
   コード生成しています。
-  8 of 176 functions ( 4.5%) were compiled, the rest were copied from previous compilation.
-    0 functions were new in current compilation
-    1 functions had inline decision re-evaluated but remain unchanged
-  コード生成が終了しました。
-  Puyo!.vcxproj -> C:\Users\vantan\Documents\Atelier\Children\PunyoPunyo\Release\PunyoPunyo.exe
-  Puyo!.vcxproj -> C:\Users\vantan\Documents\Atelier\Children\PunyoPunyo\Release\PunyoPunyo.pdb (Full PDB)
+c:\users\vantan\documents\atelier\children\punyopunyo\gameobject.h(50): error C4716: 'GameObject::setRenderPriority': 値を返さなければいけません
+c:\users\vantan\documents\atelier\children\punyopunyo\gameobject.h(49): error C4716: 'GameObject::setLogicPriority': 値を返さなければいけません
+  70 of 196 functions (35.7%) were compiled, the rest were copied from previous compilation.
+    21 functions were new in current compilation
+    26 functions had inline decision re-evaluated but remain unchanged
+LINK : fatal error LNK1257: コードの生成に失敗しました。

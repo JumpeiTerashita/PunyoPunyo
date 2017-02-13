@@ -37,6 +37,17 @@ GameManager* GameManager::getInstance() {
 	return GameManager::instance;
 }
 
+std::list< GameObject* > GameManager::getObjects() {
+
+	std::list< GameObject* > out;
+
+	for (auto obj : objects) {
+		out.push_back(obj);
+	}
+
+	return out;
+}
+
 void GameManager::Scene_Title()
 {
 	glPushMatrix();
@@ -44,7 +55,7 @@ void GameManager::Scene_Title()
 		glColor4f(1, 1, 1, 1);
 		glTranslatef(-0.45f, 0.3f, 0);
 		glScalef(0.001f, 0.001f, 0.001f);
-		DrawString_Stroke("P U Y O !");
+		DrawString_Stroke("Punyo Punyo");
 	}
 	glPopMatrix();
 	glPushMatrix();
@@ -68,10 +79,13 @@ void GameManager::Scene_Ingame()
 
 	std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
 
+	objects.sort(sortLogicPriority);
+	if (objects.size()==1)
+	{
+		(*it)->_state = STATE_FREEFALL;
+	}
 	while (it != objects.end()) {
 		//printf("%d\n", objects.size());
-
-
 
 		(*it)->ObjUpdate();
 
@@ -120,6 +134,8 @@ void GameManager::display() {
 		glLoadIdentity();
 
 		SceneIngame::getInstance()->display();
+
+		objects.sort(sortRenderPriority);
 
 		std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
 
