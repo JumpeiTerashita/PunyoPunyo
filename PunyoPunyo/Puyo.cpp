@@ -72,8 +72,8 @@ void Puyo::Fall()
 			}
 			Keyflag_left = false;
 		}
-		else*/ 
-		if (Scene->map[pos._y][pos._x - 1] == nullptr)
+		else*/
+		if (!Search_There_is(pos._x - 1, pos._y))
 		{
 			if (pos._x > 1)
 			{
@@ -84,9 +84,9 @@ void Puyo::Fall()
 		}
 		else
 		{
-			if (Scene->map[pos._y][pos._x - 1]->_state == STATE_FALL)
+			if (Search_is_Falling(pos._x - 1, pos._y))
 			{
-				if (pos._x > 2 && Scene->map[pos._y][pos._x - 2] == nullptr)
+				if (pos._x > 2 && !Search_There_is(pos._x - 2, pos._y))
 				{
 					delMap(pos._x, pos._y);
 					pos._x--;
@@ -100,7 +100,7 @@ void Puyo::Fall()
 
 	if (Keyflag_right)
 	{
-		if (Scene->map[pos._y][pos._x + 1] == nullptr)
+		if (!Search_There_is(pos._x + 1, pos._y))
 		{
 			if (pos._x < 6)
 			{
@@ -111,9 +111,9 @@ void Puyo::Fall()
 		}
 		else
 		{
-			if (Scene->map[pos._y][pos._x + 1]->_state == STATE_FALL)
+			if (Search_is_Falling(pos._x + 1, pos._y))
 			{
-				if (pos._x < 5 && Scene->map[pos._y][pos._x + 2] == nullptr)
+				if (pos._x < 5 && !Search_There_is(pos._x + 2, pos._y))
 				{
 					delMap(pos._x, pos._y);
 					pos._x++;
@@ -139,7 +139,7 @@ void Puyo::Fall()
 		}
 		else if (pos._x == 3 && pos._y >= 11)
 		{
-			if (Scene->map[pos._y - 1][pos._x] != nullptr&&Scene->map[pos._y - 1][pos._x]->_state != STATE_FALL)
+			if (Search_There_is(pos._x, pos._y - 1) && !Search_is_Falling(pos._x, pos._y - 1))
 			{
 				Scene->GameOver = true;
 			}
@@ -192,9 +192,9 @@ void Puyo::Turn()
 
 	if (!Scene->turned)
 	{
-		if (Scene->map[pos._y + 1][pos._x] != nullptr)
+		if (Search_There_is(pos._x, pos._y + 1))
 		{
-			if (Scene->map[pos._y + 1][pos._x + 1] == nullptr&&pos._x < 6)
+			if (Search_There_is(pos._x + 1, pos._y + 1) && pos._x < 6)
 			{
 				delMap(pos._x, pos._y);
 				pos._x++;
@@ -205,9 +205,9 @@ void Puyo::Turn()
 			}
 		}
 
-		else if (Scene->map[pos._y][pos._x - 1] != nullptr)
+		else if (Search_There_is(pos._x - 1, pos._y))
 		{
-			if (Scene->map[pos._y + 1][pos._x - 1] == nullptr)
+			if (!Search_There_is(pos._x - 1, pos._y + 1))
 			{
 				delMap(pos._x, pos._y);
 				pos._x--;
@@ -217,10 +217,10 @@ void Puyo::Turn()
 				return;
 			}
 		}
-
-		else if (Scene->map[pos._y - 1][pos._x] != nullptr)
+		else if (Search_There_is(pos._x, pos._y - 1))
 		{
-			if (Scene->map[pos._y - 1][pos._x - 1] == nullptr&&pos._x > 1)
+
+			if (!Search_There_is(pos._x - 1, pos._y - 1) && pos._x > 1)
 			{
 				delMap(pos._x, pos._y);
 				pos._x--;
@@ -230,10 +230,9 @@ void Puyo::Turn()
 				return;
 			}
 		}
-
-		else if (Scene->map[pos._y][pos._x + 1] != nullptr)
+		else if (Search_There_is(pos._x + 1, pos._y))
 		{
-			if (Scene->map[pos._y - 1][pos._x + 1] == nullptr)
+			if (!Search_There_is(pos._x + 1, pos._y - 1))
 			{
 				delMap(pos._x, pos._y);
 				pos._x++;
@@ -282,21 +281,22 @@ bool Puyo::UnderCollision()
 		setLifeTime(0);
 		return true;
 	}
-	if ((Scene->map[pos._y - 1][pos._x] != nullptr) && (Scene->map[pos._y - 1][pos._x]->_state != STATE_FALL))
+
+	if (Search_There_is(pos._x, pos._y - 1) && !Search_is_Falling(pos._x, pos._y - 1))
 	{
 		_state = STATE_SET;
 		map(pos._x, pos._y, STATE_SET);
 		setLifeTime(0);
 		return true;
 	}
-	else if ((Scene->map[pos._y - 1][pos._x] != nullptr) && (Scene->map[pos._y - 1][pos._x]->_state == STATE_FALL))
+	else if (Search_is_Falling(pos._x, pos._y - 1))
 	{
 		/*if (pos._y > 1 && Scene->map[pos._y - 2][pos._x] == nullptr)
 		{
 			return true;
 		}
 		else */
-		if (pos._y == 1 || Scene->map[pos._y - 2][pos._x] != nullptr)
+		if (pos._y == 1 || Search_There_is(pos._x, pos._y - 2))
 		{
 			_state = STATE_SET;
 			map(pos._x, pos._y, STATE_SET);
@@ -309,6 +309,18 @@ bool Puyo::UnderCollision()
 	return false;
 }
 
+bool Puyo::Search_is_Falling(int _x, int _y)
+{
+	if (SceneIngame::getInstance()->map[_y][_x] == nullptr) return false;
+	if (SceneIngame::getInstance()->map[_y][_x]->_state == STATE_FALL) return true;
+	return false;
+}
+
+bool Puyo::Search_There_is(int _x, int _y)
+{
+	if (SceneIngame::getInstance()->map[_y][_x] == nullptr) return false;
+	return true;
+}
 
 
 void Puyo::ObjDisp()

@@ -170,7 +170,7 @@ void SceneIngame::DeleteStart()
 			VanishPuyo();
 		}
 	}
-	
+
 }
 
 
@@ -207,7 +207,7 @@ void SceneIngame::VanishPuyo()
 		ChainCounter++;
 		DelScoreCalc();
 	}
-	
+
 	for (int i = 0; i < 15; i++)
 	{
 		for (int j = 0; j < 8; j++)
@@ -220,7 +220,7 @@ void SceneIngame::VanishPuyo()
 	}
 
 
-	
+
 }
 
 void SceneIngame::WaitingRestart()
@@ -497,6 +497,8 @@ void SceneIngame::display()
 
 	return;
 }
+
+
 
 bool SceneIngame::Search_State_is(STATE _state)
 {
