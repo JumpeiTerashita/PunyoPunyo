@@ -16,18 +16,28 @@ public:
 	bool GameOver;
 	Puyo* map[15][8];
 	float ScoreCounter;
+	int FallLimit;
+	bool _is_vertical;
 
 	void PuyoCreate();
 	void CreatedMap();
 	void update();
 	void display();
 	void Playing();
-	bool turned;
+	void KeyJudge();
+
 	int turnCounter;
 	bool Search_State_is(STATE _state);
 	int Search_States_are(STATE _state);
 	int HighScore;
+	bool Keyflag_left;
+	bool Keyflag_right;
+	bool Keyflag_turnCounterClockwise;
+	bool Keyflag_turnClockwise;
 private:
+	
+
+
 	int VanishCounter;
 	int AllVanishedNum;
 	int ChainCounter;

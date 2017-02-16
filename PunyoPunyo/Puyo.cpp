@@ -11,7 +11,7 @@ Puyo::Puyo(int _x, int _y, int _colors)
 	setLifeTime(1);
 	_state = STATE_FALL;
 	_is_checked = false;
-
+	_is_rotate = false;
 
 	pos.set(_x, _y);
 	ColorNumber = (COLORPATTERN)(rand() % _colors);
@@ -58,7 +58,7 @@ void Puyo::Fall()
 	SceneIngame* Scene = SceneIngame::getInstance();
 	if (_state == STATE_FREEFALL) setSequence(&Puyo::FreeFall);
 
-	if (Keyflag_left)
+	if (Scene->Keyflag_left)
 	{
 		//TODO c‚Ì‚Æ‚«‚Ì‰¡ˆÚ“®@‚¿‚¬‚èƒiƒV
 		//c‚Ì‚Æ‚«‚Ì‰¡ˆÚ“®
@@ -73,6 +73,7 @@ void Puyo::Fall()
 			Keyflag_left = false;
 		}
 		else*/
+
 		if (!Search_There_is(pos._x - 1, pos._y))
 		{
 			if (pos._x > 1)
@@ -95,10 +96,10 @@ void Puyo::Fall()
 			}
 		}
 		//addFrame(-20);
-		Keyflag_left = false;
+
 	}
 
-	if (Keyflag_right)
+	if (Scene->Keyflag_right)
 	{
 		if (!Search_There_is(pos._x + 1, pos._y))
 		{
@@ -122,12 +123,13 @@ void Puyo::Fall()
 			}
 		}
 		//addFrame(-20);
-		Keyflag_right = false;
 
 	}
 
+	if (Scene->Keyflag_turnCounterClockwise)	TurnCounterClockwise();
+	else if (Scene->Keyflag_turnClockwise)	TurnClockwise();
 
-	if (getFrame() >= 30)
+	if (getFrame() >= Scene->FallLimit)
 	{
 
 		if (!UnderCollision())
@@ -148,61 +150,30 @@ void Puyo::Fall()
 
 	}
 
-	InputMove();
+
 
 
 }
 
-void Puyo::InputMove()
+
+
+void Puyo::TurnCounterClockwise()
 {
 	SceneIngame* Scene = SceneIngame::getInstance();
-	int FallPuyoCount = Scene->Search_States_are(STATE_FALL);
-	printf("\n%d\n", FallPuyoCount);
-	//if (FallPuyoCount == 1)
-	//{
-		//addFrame(15);
-		//return;
-	//}
-	if (_SpecialKey == GLUT_KEY_RIGHT || _Key == 'd')
-		//(input.AnalogX > 700 && getFrame() % 60 == 0)
-	{
-		Keyflag_right = true;
-
-	}
-	if (_SpecialKey == GLUT_KEY_LEFT || _Key == 'a')
-	{
-		Keyflag_left = true;
-
-	}
-	if (_UpKey == ' ')
-	{
-		Turn();
-	}
-	if (_SpecialKey == GLUT_KEY_DOWN || _Key == 's')
-	{
-		Scene->ScoreCounter += 0.5;
-		addFrame(60);
-	}
-}
-
-void Puyo::Turn()
-{
-	SceneIngame* Scene = SceneIngame::getInstance();
-	if (!Scene->turned)
+	if (_is_rotate)
 	{
 		if (Search_There_is(pos._x, pos._y + 1))
 		{
-			if (Search_There_is(pos._x + 1, pos._y + 1) && pos._x < 6)
+			if (!Search_There_is(pos._x + 1, pos._y + 1) && pos._x < 6)
 			{
 				delMap(pos._x, pos._y);
 				pos._x++;
 				pos._y++;
 				map(pos._x, pos._y, STATE_FALL);
-				Scene->turned = true;
+				Scene->_is_vertical = false;
 				return;
 			}
 		}
-
 		else if (Search_There_is(pos._x - 1, pos._y))
 		{
 			if (!Search_There_is(pos._x - 1, pos._y + 1))
@@ -211,20 +182,19 @@ void Puyo::Turn()
 				pos._x--;
 				pos._y++;
 				map(pos._x, pos._y, STATE_FALL);
-				Scene->turned = true;
+				Scene->_is_vertical = true;
 				return;
 			}
 		}
 		else if (Search_There_is(pos._x, pos._y - 1))
 		{
-
 			if (!Search_There_is(pos._x - 1, pos._y - 1) && pos._x > 1)
 			{
 				delMap(pos._x, pos._y);
 				pos._x--;
 				pos._y--;
 				map(pos._x, pos._y, STATE_FALL);
-				Scene->turned = true;
+				Scene->_is_vertical = false;
 				return;
 			}
 		}
@@ -236,14 +206,67 @@ void Puyo::Turn()
 				pos._x++;
 				pos._y--;
 				map(pos._x, pos._y, STATE_FALL);
-				Scene->turned = true;
+				Scene->_is_vertical = true;
 				return;
 			}
 		}
-
 	}
+}
 
-
+void Puyo::TurnClockwise()
+{
+	SceneIngame* Scene = SceneIngame::getInstance();
+	if (_is_rotate)
+	{
+		if (Search_There_is(pos._x, pos._y + 1))
+		{
+			if (!Search_There_is(pos._x - 1, pos._y + 1) && pos._x > 1)
+			{
+				delMap(pos._x, pos._y);
+				pos._x--;
+				pos._y++;
+				map(pos._x, pos._y, STATE_FALL);
+				Scene->_is_vertical = false;
+				return;
+			}
+		}
+		else if (Search_There_is(pos._x + 1, pos._y))
+		{
+			if (!Search_There_is(pos._x + 1, pos._y + 1))
+			{
+				delMap(pos._x, pos._y);
+				pos._x++;
+				pos._y++;
+				map(pos._x, pos._y, STATE_FALL);
+				Scene->_is_vertical = true;
+				return;
+			}
+		}
+		else if (Search_There_is(pos._x, pos._y - 1))
+		{
+			if (!Search_There_is(pos._x + 1, pos._y - 1) && pos._x < 6)
+			{
+				delMap(pos._x, pos._y);
+				pos._x++;
+				pos._y--;
+				map(pos._x, pos._y, STATE_FALL);
+				Scene->_is_vertical = false;
+				return;
+			}
+		}
+		else if (Search_There_is(pos._x - 1, pos._y))
+		{
+			if (!Search_There_is(pos._x - 1, pos._y - 1))
+			{
+				delMap(pos._x, pos._y);
+				pos._x--;
+				pos._y--;
+				map(pos._x, pos._y, STATE_FALL);
+				Scene->_is_vertical = true;
+				return;
+			}
+		}
+	}
 }
 
 void Puyo::FreeFall()
@@ -322,7 +345,7 @@ bool Puyo::Search_There_is(int _x, int _y)
 
 void Puyo::ObjDisp()
 {
-	if (!Search_There_is(pos._x,pos._y))
+	if (!Search_There_is(pos._x, pos._y))
 	{
 		glPushMatrix();
 		{

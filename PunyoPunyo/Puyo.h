@@ -25,6 +25,7 @@ public:
 	
 	float size;
 	bool _is_checked;
+	bool _is_rotate;
 	
 
 
@@ -37,8 +38,9 @@ public:
 	void ColorSetup(COLORPATTERN _colorNumber);
 	
 	void Fall();
-	void InputMove();
-	void Turn();
+	void TurnCounterClockwise();
+	void TurnClockwise();
+
 	void Set();
 	void FreeFall();
 
@@ -52,8 +54,7 @@ public:
 	bool Search_is_Falling(int _x, int _y);
 private:
 	
-	bool Keyflag_left;
-	bool Keyflag_right;
+	
 
 };
 

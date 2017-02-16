@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "Scene_InGame.h"
+#include "InputManager.h"
 #include "glut.h"
 #include <string.h>
 
@@ -30,13 +31,14 @@ SceneIngame::SceneIngame()
 	PuyoCreate();
 	CreatedMap();
 	PuyoCreate();
+	FallLimit = 30;
 	turnCounter = 0;
 	PuyoCounter = 0;
 	ScoreCounter = 0;
 	ChainCounter = 0;
 	AllVanishedNum = 0;
 	HighScore = GameManager::getInstance()->HighScore;
-	turned = false;
+	_is_vertical = true;
 	GameOver = false;
 	setSequence(&SceneIngame::Playing);
 }
@@ -63,6 +65,7 @@ void DrawString(const char* str)
 void SceneIngame::PuyoCreate()
 {
 	First = new Puyo(3, 10, 4);
+	First->_is_rotate = true;
 	Second = new Puyo(3, 11, 4);
 	/*if (AllVanishedNum<20)
 	{
@@ -257,9 +260,52 @@ void SceneIngame::WaitingRestart()
 
 }
 
+void SceneIngame::KeyJudge()
+{
+	if (_SpecialKey == GLUT_KEY_RIGHT || _Key == 'd')
+	{
+		if (_is_vertical)
+		{
+			if (GameManager::getInstance()->MoveSearch(1))
+			{
+				Keyflag_right = true;
+			}
+		}
+		else Keyflag_right = true;
+	}
+	
+		//(input.AnalogX > 700 && getFrame() % 60 == 0)
+	
+	if (_SpecialKey == GLUT_KEY_LEFT || _Key == 'a')
+	{
+		if (_is_vertical)
+		{
+			if (GameManager::getInstance()->MoveSearch(-1))
+			{
+				Keyflag_left = true;
+			}
+		}
+		else Keyflag_left = true;
+	}
+	if (_UpKey == 'j') Keyflag_turnCounterClockwise = true;
+	if (_UpKey == 'k') Keyflag_turnClockwise = true;
+	if (_SpecialKey == GLUT_KEY_DOWN || _Key == 's')
+	{
+		ScoreCounter += 1;
+		FallLimit = 0;
+	}
+	else FallLimit = 30;
+}
+
 void SceneIngame::Playing()
 {
-	turned = false;
+
+	Keyflag_left = false;
+	Keyflag_right = false;
+	Keyflag_turnCounterClockwise = false;
+	Keyflag_turnClockwise = false;
+	KeyJudge();
+
 	if (GameOver)
 	{
 		WaitingRestart();
