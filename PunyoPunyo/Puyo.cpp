@@ -188,8 +188,6 @@ void Puyo::InputMove()
 void Puyo::Turn()
 {
 	SceneIngame* Scene = SceneIngame::getInstance();
-	//TODO TurnCount == 1 —Ž‚¿‚½‚Æ‚« Á‚¦‚é
-
 	if (!Scene->turned)
 	{
 		if (Search_There_is(pos._x, pos._y + 1))
@@ -262,7 +260,6 @@ void Puyo::FreeFall()
 		}
 
 	}
-
 	addFrame(5);
 }
 
@@ -325,13 +322,16 @@ bool Puyo::Search_There_is(int _x, int _y)
 
 void Puyo::ObjDisp()
 {
-	glPushMatrix();
+	if (!Search_There_is(pos._x,pos._y))
 	{
-		glColor4f(colorStatus[0], colorStatus[1], colorStatus[2], colorStatus[3]);
-		glTranslatef(-0.7 + (pos._x - 1)*0.15, -0.75 + pos._y*0.15, 1);
-		glutSolidSphere(0.075, 180, 5);
+		glPushMatrix();
+		{
+			glColor4f(colorStatus[0], colorStatus[1], colorStatus[2], colorStatus[3]);
+			glTranslatef(-0.7 + (pos._x - 1)*0.15, -0.75 + pos._y*0.15, 1);
+			glutSolidSphere(0.075, 180, 5);
+		}
+		glPopMatrix();
 	}
-	glPopMatrix();
 	glColor4f(1, 1, 1, 1);
 	setRenderPriority(pos._y);
 }

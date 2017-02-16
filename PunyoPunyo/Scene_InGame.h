@@ -23,6 +23,7 @@ public:
 	void display();
 	void Playing();
 	bool turned;
+	int turnCounter;
 	bool Search_State_is(STATE _state);
 	int Search_States_are(STATE _state);
 	int HighScore;

@@ -102,6 +102,20 @@ void GameManager::Scene_Ingame()
 	KeyEventReset();
 }
 
+
+bool GameManager::MoveSearch(int lookX)
+{
+	SceneIngame* Scene = SceneIngame::getInstance();
+	std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
+
+	while (it != objects.end()) {
+		if (Scene->map[(*it)->pos._y][(*it)->pos._x+lookX] != nullptr) return false;
+		it++;
+	}
+
+	return true;
+}
+
 void GameManager::update() {
 	runSequence();
 }

@@ -18,6 +18,7 @@ public:
 	void Scene_Title();
 	void Scene_Ingame();
 
+	bool MoveSearch(int lookX);
 
 	void update();
 	void display();

@@ -48,10 +48,10 @@ public:
 
 	void ObjUpdate();
 	void ObjDisp();
-
-private:
 	bool Search_There_is(int _x, int _y);
 	bool Search_is_Falling(int _x, int _y);
+private:
+	
 	bool Keyflag_left;
 	bool Keyflag_right;
 

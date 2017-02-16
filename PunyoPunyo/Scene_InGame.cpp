@@ -30,6 +30,7 @@ SceneIngame::SceneIngame()
 	PuyoCreate();
 	CreatedMap();
 	PuyoCreate();
+	turnCounter = 0;
 	PuyoCounter = 0;
 	ScoreCounter = 0;
 	ChainCounter = 0;
@@ -266,6 +267,7 @@ void SceneIngame::Playing()
 	}
 	if (!Search_State_is(STATE_FALL))
 	{
+		turnCounter = 0;
 		DeleteStart();
 	}
 	if (!Search_State_is(STATE_FALL) && !Search_State_is(STATE_AFTERDELETE))
