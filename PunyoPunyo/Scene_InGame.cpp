@@ -64,9 +64,9 @@ void DrawString(const char* str)
 
 void SceneIngame::PuyoCreate()
 {
-	First = new Puyo(3, 10, 4);
+	First = new Puyo(3, 12, 4);
 	First->_is_rotate = true;
-	Second = new Puyo(3, 11, 4);
+	Second = new Puyo(3, 13, 4);
 	/*if (AllVanishedNum<20)
 	{
 		First = new Puyo(3, 10,3);
@@ -177,7 +177,7 @@ void SceneIngame::DeleteStart()
 		}
 	}
 	VanishPuyo();
-	DelScoreCalc();
+	DelScoreCalc();	//TODO 連鎖時スコア計算修正　同時消しスコア
 	if (VanishCounter == 0) setSequence(&SceneIngame::FinishedVanish);
 	else setSequence(&SceneIngame::Playing);
 }

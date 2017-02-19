@@ -286,6 +286,16 @@ bool Puyo::UnderCollision()
 		setLifeTime(0);
 		return true;
 	}
+	else if (Search_is_Falling(pos._x, pos._y - 1))
+	{
+		if (pos._y == 2 || Search_There_is(pos._x, pos._y - 2))
+		{
+			_state = STATE_SET;
+			map(pos._x, pos._y, STATE_SET);
+			setLifeTime(0);
+			return true;
+		}
+	}
 	return false;
 }
 

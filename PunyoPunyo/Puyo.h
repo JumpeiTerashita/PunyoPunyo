@@ -39,6 +39,8 @@ public:
 	void ColorSetup(COLORPATTERN _colorNumber);
 	
 	void Fall();
+
+	//TODO turn@‰ñ‚µ‚È‚ª‚ç‚Ğ‚Á‚©‚¯‚é‚Æ‚¿‚¬‚ê‚é
 	void TurnCounterClockwise();
 	void TurnClockwise();
 
