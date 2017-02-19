@@ -164,9 +164,9 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 //TODO ìØéûè¡Çµé¿ëï
 void SceneIngame::DeleteStart()
 {
-	for (int i = 0; i < 15; i++)
+	for (int i = 1; i < 15; i++)
 	{
-		for (int j = 0; j < 8; j++)
+		for (int j = 1; j < 8; j++)
 		{
 			if (map[i][j] == nullptr) continue;
 			PuyoCounter = 0;
@@ -183,9 +183,9 @@ void SceneIngame::VanishPuyo()
 	VanishCounter = 0;
 	if (PuyoCounter >= 4)
 	{
-		for (int i = 0; i < 15; i++)
+		for (int i = 1; i < 15; i++)
 		{
-			for (int j = 0; j < 8; j++)
+			for (int j = 1; j < 8; j++)
 			{
 
 				if (map[i][j] != nullptr)
@@ -212,9 +212,9 @@ void SceneIngame::VanishPuyo()
 		DelScoreCalc();
 	}
 
-	for (int i = 0; i < 15; i++)
+	for (int i = 1; i < 15; i++)
 	{
-		for (int j = 0; j < 8; j++)
+		for (int j = 1; j < 8; j++)
 		{
 			if (map[i][j] == nullptr) continue;
 
@@ -528,15 +528,15 @@ void SceneIngame::UIDisp()
 void SceneIngame::display()
 {
 	UIDisp();
-	for (int i = 0; i < 15; i++)
+	for (int i = 1; i < 15; i++)
 	{
-		for (int j = 0; j < 8; j++)
+		for (int j = 1; j < 8; j++)
 		{
 			if (map[i][j] == nullptr) continue;
 			glPushMatrix();
 			{
 				glColor4f(map[i][j]->colorStatus[0], map[i][j]->colorStatus[1], map[i][j]->colorStatus[2], map[i][j]->colorStatus[3]);
-				glTranslatef(-0.7 + (j - 1)*0.15, -0.75 + i*0.15, 1);
+				glTranslatef(-0.7 + (j - 1)*0.15, -0.75 + (i-1)*0.15, 1);
 				glutSolidSphere(0.075, 180, 5);
 			}
 			glPopMatrix();
@@ -550,9 +550,9 @@ void SceneIngame::display()
 
 bool SceneIngame::Search_State_is(STATE _state)
 {
-	for (int i = 0; i < 15; i++)
+	for (int i = 1; i < 15; i++)
 	{
-		for (int j = 0; j < 8; j++)
+		for (int j = 1; j < 8; j++)
 		{
 			if (map[i][j] != nullptr&&map[i][j]->_state == _state)
 			{
@@ -566,9 +566,9 @@ bool SceneIngame::Search_State_is(STATE _state)
 int SceneIngame::Search_States_are(STATE _state)
 {
 	int Puyos = 0;
-	for (int i = 0; i < 15; i++)
+	for (int i = 1; i < 15; i++)
 	{
-		for (int j = 0; j < 8; j++)
+		for (int j = 1; j < 8; j++)
 		{
 			if (map[i][j] == nullptr) continue;
 			if (map[i][j] != nullptr&&map[i][j]->_state == _state)

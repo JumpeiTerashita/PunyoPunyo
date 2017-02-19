@@ -294,7 +294,7 @@ void Puyo::Set()
 bool Puyo::UnderCollision()
 {
 	SceneIngame* Scene = SceneIngame::getInstance();
-	if (pos._y == 0)
+	if (pos._y == 1)
 	{
 		_state = STATE_SET;
 		map(pos._x, pos._y, STATE_SET);
@@ -308,22 +308,6 @@ bool Puyo::UnderCollision()
 		map(pos._x, pos._y, STATE_SET);
 		setLifeTime(0);
 		return true;
-	}
-	else if (Search_is_Falling(pos._x, pos._y - 1))
-	{
-		/*if (pos._y > 1 && Scene->map[pos._y - 2][pos._x] == nullptr)
-		{
-			return true;
-		}
-		else */
-		if (pos._y == 1 || Search_There_is(pos._x, pos._y - 2))
-		{
-			_state = STATE_SET;
-			map(pos._x, pos._y, STATE_SET);
-			setLifeTime(0);
-			return true;
-		}
-
 	}
 
 	return false;
@@ -350,7 +334,7 @@ void Puyo::ObjDisp()
 		glPushMatrix();
 		{
 			glColor4f(colorStatus[0], colorStatus[1], colorStatus[2], colorStatus[3]);
-			glTranslatef(-0.7 + (pos._x - 1)*0.15, -0.75 + pos._y*0.15, 1);
+			glTranslatef(-0.7 + (pos._x - 1)*0.15, -0.75 + (pos._y - 1)*0.15, 1);
 			glutSolidSphere(0.075, 180, 5);
 		}
 		glPopMatrix();
