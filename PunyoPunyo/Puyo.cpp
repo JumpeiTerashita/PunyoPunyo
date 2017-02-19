@@ -12,7 +12,7 @@ Puyo::Puyo(int _x, int _y, int _colors)
 	_state = STATE_FALL;
 	_is_checked = false;
 	_is_rotate = false;
-
+	_will_delete = false;
 	pos.set(_x, _y);
 	ColorNumber = (COLORPATTERN)(rand() % _colors);
 	ColorSetup(ColorNumber);
@@ -25,13 +25,11 @@ Puyo::Puyo(int _x, int _y, STATE _seq, COLORPATTERN _colorNumber)
 	setLifeTime(1);
 	_state = _seq;
 	_is_checked = false;
-
+	_will_delete = false;
 
 	pos.set(_x, _y);
 	ColorNumber = _colorNumber;
-
 	ColorSetup(ColorNumber);
-
 }
 
 void Puyo::ObjUpdate()
@@ -60,20 +58,6 @@ void Puyo::Fall()
 
 	if (Scene->Keyflag_left)
 	{
-		//TODO c‚Ì‚Æ‚«‚Ì‰¡ˆÚ“®@‚¿‚¬‚èƒiƒV
-		//c‚Ì‚Æ‚«‚Ì‰¡ˆÚ“®
-		/*if (Scene->map[pos._y + 1][pos._x] != nullptr || Scene->map[pos._y - 1][pos._x] != nullptr)
-		{
-			if (Scene->map[pos._y][pos._x - 1] == nullptr&&pos._x > 1)
-			{
-				delMap(pos._x, pos._y);
-				pos._x--;
-				map(pos._x, pos._y, STATE_FALL);
-			}
-			Keyflag_left = false;
-		}
-		else*/
-
 		if (!Search_There_is(pos._x - 1, pos._y))
 		{
 			if (pos._x > 1)
@@ -95,8 +79,6 @@ void Puyo::Fall()
 				}
 			}
 		}
-		//addFrame(-20);
-
 	}
 
 	if (Scene->Keyflag_right)
@@ -122,8 +104,6 @@ void Puyo::Fall()
 				}
 			}
 		}
-		//addFrame(-20);
-
 	}
 
 	if (Scene->Keyflag_turnCounterClockwise)	TurnCounterClockwise();
@@ -145,9 +125,7 @@ void Puyo::Fall()
 			{
 				Scene->GameOver = true;
 			}
-
 		}
-
 	}
 
 
@@ -272,7 +250,7 @@ void Puyo::TurnClockwise()
 void Puyo::FreeFall()
 {
 
-	if (getFrame() >= 30)
+	if (getFrame() >= 5)
 	{
 		if (!UnderCollision())
 		{
@@ -283,7 +261,6 @@ void Puyo::FreeFall()
 		}
 
 	}
-	addFrame(5);
 }
 
 void Puyo::Set()
@@ -309,7 +286,6 @@ bool Puyo::UnderCollision()
 		setLifeTime(0);
 		return true;
 	}
-
 	return false;
 }
 

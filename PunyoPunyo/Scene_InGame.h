@@ -26,7 +26,7 @@ public:
 	void Playing();
 	void KeyJudge();
 
-	int turnCounter;
+
 	bool Search_State_is(STATE _state);
 	int Search_States_are(STATE _state);
 	int HighScore;
@@ -44,7 +44,9 @@ private:
 	int PuyoCounter;
 	COLORPATTERN SearchColor;
 	void CheckPuyo(int _x, int _y);
+	void DeleteMarkSet();
 	void VanishPuyo();
+	void FinishedVanish();
 	void DeleteStart();
 	void WaitingRestart();
 	Puyo* First;

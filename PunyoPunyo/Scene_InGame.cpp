@@ -32,7 +32,7 @@ SceneIngame::SceneIngame()
 	CreatedMap();
 	PuyoCreate();
 	FallLimit = 30;
-	turnCounter = 0;
+	
 	PuyoCounter = 0;
 	ScoreCounter = 0;
 	ChainCounter = 0;
@@ -161,71 +161,151 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	}
 	return;
 }
+
+
 //TODO 同時消し実装
 void SceneIngame::DeleteStart()
 {
 	for (int i = 1; i < 15; i++)
 	{
-		for (int j = 1; j < 8; j++)
+		for (int j = 1; j < 7; j++)
 		{
 			if (map[i][j] == nullptr) continue;
 			PuyoCounter = 0;
 			CheckPuyo(j, i);
-			VanishPuyo();
+			DeleteMarkSet();
 		}
 	}
-
+	VanishPuyo();
+	DelScoreCalc();
+	if (VanishCounter == 0) setSequence(&SceneIngame::FinishedVanish);
+	else setSequence(&SceneIngame::Playing);
 }
 
 
-void SceneIngame::VanishPuyo()
+void SceneIngame::DeleteMarkSet()
 {
-	VanishCounter = 0;
 	if (PuyoCounter >= 4)
 	{
 		for (int i = 1; i < 15; i++)
 		{
-			for (int j = 1; j < 8; j++)
+			for (int j = 1; j < 7; j++)
 			{
-
 				if (map[i][j] != nullptr)
 				{
 					if (map[i][j]->_is_checked == true && map[i][j]->ColorNumber == SearchColor)
 					{
-						VanishCounter++;
-						map[i][j] = nullptr;
-					}
-					else
-					{
-						COLORPATTERN RefallColor = map[i][j]->ColorNumber;
-						map[i][j] = nullptr;
-						Puyo* Refall = new Puyo(j, i, STATE_AFTERDELETE, RefallColor);
-						GameManager::getInstance()->addObject(Refall);
-						Refall->setSequence(&Puyo::FreeFall);
-						map[i][j] = Refall;
+						map[i][j]->_will_delete = true;
 					}
 				}
-
 			}
 		}
-		ChainCounter++;
-		DelScoreCalc();
 	}
 
 	for (int i = 1; i < 15; i++)
 	{
-		for (int j = 1; j < 8; j++)
+		for (int j = 1; j < 7; j++)
 		{
 			if (map[i][j] == nullptr) continue;
 
 			map[i][j]->_is_checked = false;
-
 		}
 	}
-
-
-
 }
+
+void SceneIngame::VanishPuyo()
+{
+	VanishCounter = 0;
+	for (int i = 1; i < 15; i++)
+	{
+		for (int j = 1; j < 7; j++)
+		{
+			if (map[i][j] != nullptr)
+			{
+				if (map[i][j]->_will_delete == true)
+				{
+					VanishCounter++;
+					map[i][j] = nullptr;
+				}
+				else
+				{
+					COLORPATTERN RefallColor = map[i][j]->ColorNumber;
+					map[i][j] = nullptr;
+					Puyo* Refall = new Puyo(j, i, STATE_AFTERDELETE, RefallColor);
+					GameManager::getInstance()->addObject(Refall);
+					Refall->setSequence(&Puyo::FreeFall);
+					map[i][j] = Refall;
+				}
+			}
+		}
+	}
+	
+}
+
+//void SceneIngame::DeleteStart()
+//{
+//	for (int i = 1; i < 15; i++)
+//	{
+//		for (int j = 1; j < 7; j++)
+//		{
+//			if (map[i][j] == nullptr) continue;
+//			PuyoCounter = 0;
+//			CheckPuyo(j, i);
+//			DeleteMarkSet();
+//		}
+//	}
+//
+//}
+//
+//
+//void SceneIngame::DeleteMarkSet()
+//{
+//	VanishCounter = 0;
+//	if (PuyoCounter >= 4)
+//	{
+//		for (int i = 1; i < 15; i++)
+//		{
+//			for (int j = 1; j < 7; j++)
+//			{
+//
+//				if (map[i][j] != nullptr)
+//				{
+//					if (map[i][j]->_is_checked == true && map[i][j]->ColorNumber == SearchColor)
+//					{
+//						VanishCounter++;
+//						map[i][j] = nullptr;
+//					}
+//					else
+//					{
+//						COLORPATTERN RefallColor = map[i][j]->ColorNumber;
+//						map[i][j] = nullptr;
+//						Puyo* Refall = new Puyo(j, i, STATE_AFTERDELETE, RefallColor);
+//						GameManager::getInstance()->addObject(Refall);
+//						Refall->setSequence(&Puyo::FreeFall);
+//						map[i][j] = Refall;
+//					}
+//				}
+//
+//			}
+//		}
+//		ChainCounter++;
+//		DelScoreCalc();
+//	}
+//
+//	for (int i = 1; i < 15; i++)
+//	{
+//		for (int j = 1; j < 7; j++)
+//		{
+//			if (map[i][j] == nullptr) continue;
+//
+//			map[i][j]->_is_checked = false;
+//
+//		}
+//	}
+//
+//
+//
+//}
 
 void SceneIngame::WaitingRestart()
 {
@@ -237,27 +317,7 @@ void SceneIngame::WaitingRestart()
 		glClear(GL_COLOR_BUFFER_BIT);//クリア（色情報）
 		GameManager::getInstance()->setSequence(&GameManager::Scene_Title);
 	}
-	/*if (_Key)
-	{
-		PuyoColorsNum = 3;
-		for (int i = 0; i < 15; i++)
-		{
-			for (int j = 0; j < 8; j++)
-			{
-				map[i][j] = nullptr;
-			}
-		}
-		PuyoCreate();
-		CreatedMap();
-		PuyoCreate();
-		PuyoCounter = 0;
-		ScoreCounter = 0;
-		ChainCounter = 0;
-		AllVanishedNum = 0;
-		GameOver = false;
-	}*/
-
-
+	
 }
 
 void SceneIngame::KeyJudge()
@@ -273,8 +333,6 @@ void SceneIngame::KeyJudge()
 		}
 		else Keyflag_right = true;
 	}
-	
-		//(input.AnalogX > 700 && getFrame() % 60 == 0)
 	
 	if (_SpecialKey == GLUT_KEY_LEFT || _Key == 'a')
 	{
@@ -311,19 +369,18 @@ void SceneIngame::Playing()
 		WaitingRestart();
 		setSequence(&SceneIngame::WaitingRestart);
 	}
-	if (!Search_State_is(STATE_FALL))
+	if (GameManager::getInstance()->GetObjectNum()==0)
 	{
-		turnCounter = 0;
-		DeleteStart();
+		setSequence(&SceneIngame::DeleteStart);
 	}
-	if (!Search_State_is(STATE_FALL) && !Search_State_is(STATE_AFTERDELETE))
-	{
-		ChainCounter = 0;
-		CreatedMap();
-		PuyoCreate();
-	}
+}
 
-
+void SceneIngame::FinishedVanish()
+{
+	ChainCounter = 0;
+	CreatedMap();
+	PuyoCreate();
+	setSequence(&SceneIngame::Playing);
 }
 
 void SceneIngame::update()
@@ -335,28 +392,28 @@ void SceneIngame::update()
 void SceneIngame::DelScoreCalc()
 {
 	int PlusScore = 0;
-	const int VanishPuyo = VanishCounter;
+	const int VanishedPuyo = VanishCounter;
 	const int ChainNum = ChainCounter;
 	const int ChainBonusBox[20] = { 0,0,8,16,32,64,96,128,160,192,224,256,288,320,352,388,416,448,480,512 };
 
 	int ChainBonus = ChainBonusBox[ChainNum];
 
 	int VanishNumBonus = 0;
-	if (VanishPuyo == 5) VanishNumBonus = 2;
-	if (VanishPuyo == 6) VanishNumBonus = 3;
-	if (VanishPuyo == 7) VanishNumBonus = 4;
-	if (VanishPuyo == 8) VanishNumBonus = 5;
-	if (VanishPuyo == 9) VanishNumBonus = 6;
-	if (VanishPuyo == 10) VanishNumBonus = 7;
-	if (VanishPuyo >= 11) VanishNumBonus = 10;
+	if (VanishedPuyo == 5) VanishNumBonus = 2;
+	if (VanishedPuyo == 6) VanishNumBonus = 3;
+	if (VanishedPuyo == 7) VanishNumBonus = 4;
+	if (VanishedPuyo == 8) VanishNumBonus = 5;
+	if (VanishedPuyo == 9) VanishNumBonus = 6;
+	if (VanishedPuyo == 10) VanishNumBonus = 7;
+	if (VanishedPuyo >= 11) VanishNumBonus = 10;
 
 	int AllBonus = ChainBonus + VanishNumBonus;
 	if (AllBonus == 0) AllBonus = 1;
 
-	PlusScore = VanishPuyo * 10 * AllBonus;
+	PlusScore = VanishedPuyo * 10 * AllBonus;
 
 	ScoreCounter += PlusScore;
-	AllVanishedNum += VanishPuyo;
+	AllVanishedNum += VanishedPuyo;
 }
 
 void SceneIngame::UIDisp()
@@ -530,7 +587,7 @@ void SceneIngame::display()
 	UIDisp();
 	for (int i = 1; i < 15; i++)
 	{
-		for (int j = 1; j < 8; j++)
+		for (int j = 1; j < 7; j++)
 		{
 			if (map[i][j] == nullptr) continue;
 			glPushMatrix();
@@ -552,7 +609,7 @@ bool SceneIngame::Search_State_is(STATE _state)
 {
 	for (int i = 1; i < 15; i++)
 	{
-		for (int j = 1; j < 8; j++)
+		for (int j = 1; j < 7; j++)
 		{
 			if (map[i][j] != nullptr&&map[i][j]->_state == _state)
 			{
@@ -568,7 +625,7 @@ int SceneIngame::Search_States_are(STATE _state)
 	int Puyos = 0;
 	for (int i = 1; i < 15; i++)
 	{
-		for (int j = 1; j < 8; j++)
+		for (int j = 1; j < 7; j++)
 		{
 			if (map[i][j] == nullptr) continue;
 			if (map[i][j] != nullptr&&map[i][j]->_state == _state)

@@ -26,6 +26,7 @@ public:
 	float size;
 	bool _is_checked;
 	bool _is_rotate;
+	bool _will_delete;
 	
 
 

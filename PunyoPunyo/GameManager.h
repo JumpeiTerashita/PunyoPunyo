@@ -27,6 +27,10 @@ public:
 	
 	std::list< GameObject* > getObjects();
 
+	inline int GetObjectNum() {
+		return objects.size();
+	}
+
 private:
 	static GameManager* instance;
 	std::list< GameObject* > objects;
