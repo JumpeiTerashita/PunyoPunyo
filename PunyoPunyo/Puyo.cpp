@@ -119,7 +119,7 @@ void Puyo::Fall()
 			setFrame(0);
 			map(pos._x, pos._y, STATE_FALL);
 		}
-		else if (pos._x == 3 && pos._y >= 11)
+		else if (pos._x == 3 && pos._y >= 12)
 		{
 			if (Search_There_is(pos._x, pos._y - 1) && !Search_is_Falling(pos._x, pos._y - 1))
 			{

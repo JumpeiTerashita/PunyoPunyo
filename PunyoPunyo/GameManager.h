@@ -30,6 +30,10 @@ public:
 	inline int GetObjectNum() {
 		return objects.size();
 	}
+	inline std::list< GameObject* >::iterator GetObject() {
+		std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
+		return it;
+	}
 
 private:
 	static GameManager* instance;

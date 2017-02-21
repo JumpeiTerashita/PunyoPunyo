@@ -5,7 +5,16 @@
 #include "Sequence.h"
 #include "GameObject.h"
 
-
+enum COLORPATTERN
+{
+	COLOR_RED,
+	COLOR_GREEN,
+	COLOR_BLUE,
+	COLOR_YELLOW,
+	COLOR_PURPLE,
+	COLOR_WHITE,
+	COLOR_MAX
+};
 
 
 class Puyo :public GameObject, public Sequence<Puyo>
@@ -21,7 +30,7 @@ public:
 	Puyo(int _x, int _y, STATE _seq, COLORPATTERN _colorNumber);
 	~Puyo() {};
 	
-	
+	COLORPATTERN ColorNumber;
 	
 	float size;
 	bool _is_checked;

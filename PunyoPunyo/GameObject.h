@@ -2,16 +2,7 @@
 
 #include "Vec2.h"
 
-enum COLORPATTERN
-{
-	COLOR_RED,
-	COLOR_GREEN,
-	COLOR_BLUE,
-	COLOR_YELLOW,
-	COLOR_PURPLE,
-	COLOR_WHITE,
-	COLOR_MAX
-};
+
 
 enum STATE
 {
@@ -31,7 +22,7 @@ private:
 
 public:
 	vec2 pos;
-	COLORPATTERN ColorNumber;
+	
 	STATE _state;
 
 	GameObject() {

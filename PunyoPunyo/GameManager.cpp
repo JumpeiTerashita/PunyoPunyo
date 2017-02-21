@@ -80,16 +80,9 @@ void GameManager::Scene_Ingame()
 	std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
 
 	objects.sort(sortLogicPriority);
-	if (objects.size()==1)
-	{
-		(*it)->_state = STATE_FREEFALL;
-	}
+	
 	while (it != objects.end()) {
-		//printf("%d\n", objects.size());
-
 		(*it)->ObjUpdate();
-
-
 		if (0 == (*it)->getLifeTime())
 		{
 			delete (*it);
@@ -120,29 +113,11 @@ void GameManager::update() {
 	runSequence();
 }
 
-void GameManager::display() {
-	//if (gameState == SCENE_TITLE)
-	//{
-	//	glMatrixMode(GL_PROJECTION);// GLenum mode
-	//	glLoadIdentity();
-	//	gluOrtho2D(
-	//		0,      // GLdouble left
-	//		300,    // GLdouble right
-	//		0,      // GLdouble bottom
-	//		300);   // GLdouble top
-
-	//	glMatrixMode(GL_MODELVIEW);// GLenum mode
-	//	glLoadIdentity();
-
-	//	glutStrokeCharacter(
-	//		GLUT_STROKE_ROMAN,  // void *font
-	//		'A');               // int character
-	//}
-
+void GameManager::display() 
+{
 
 	if (getSequence() == &GameManager::Scene_Ingame)
 	{
-
 		glClear(GL_COLOR_BUFFER_BIT);//クリア（色情報） 残像出なくなる
 
 		glLoadIdentity();

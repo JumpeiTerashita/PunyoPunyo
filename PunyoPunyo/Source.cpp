@@ -1,3 +1,5 @@
+#pragma comment(linker,"/SUBSYSTEM:\"WINDOWS\" /ENTRY:\"mainCRTStartup\"") //コンソールウィンドウ非表示
+
 #include "InputManager.h"
 #include "GameManager.h"
 #include "glut.h"
@@ -5,8 +7,6 @@
 
 void display();
 void update(int);
-
-
 
 int main(int argc, char* argv[])
 {

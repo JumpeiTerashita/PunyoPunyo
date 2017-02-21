@@ -162,8 +162,6 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	return;
 }
 
-
-//TODO 同時消し実装
 void SceneIngame::DeleteStart()
 {
 	for (int i = 1; i < 15; i++)
@@ -177,11 +175,14 @@ void SceneIngame::DeleteStart()
 		}
 	}
 	VanishPuyo();
-	DelScoreCalc();	//TODO 連鎖時スコア計算修正　同時消しスコア
 	if (VanishCounter == 0) setSequence(&SceneIngame::FinishedVanish);
-	else setSequence(&SceneIngame::Playing);
+	else 
+	{
+		DelScoreCalc();	//TODO 連鎖時スコア計算修正
+		ChainCounter++;
+		setSequence(&SceneIngame::Playing);
+	}
 }
-
 
 void SceneIngame::DeleteMarkSet()
 {
@@ -385,18 +386,23 @@ void SceneIngame::FinishedVanish()
 
 void SceneIngame::update()
 {
+	if (GameManager::getInstance()->GetObjectNum() == 1)
+	{
+		(*GameManager::getInstance()->GetObject())->_state = STATE_FREEFALL;
+	}
 	runSequence();
-
 }
 
 void SceneIngame::DelScoreCalc()
 {
+	//TODO 同時消しボーナス追加
 	int PlusScore = 0;
 	const int VanishedPuyo = VanishCounter;
 	const int ChainNum = ChainCounter;
-	const int ChainBonusBox[20] = { 0,0,8,16,32,64,96,128,160,192,224,256,288,320,352,388,416,448,480,512 };
-
-	int ChainBonus = ChainBonusBox[ChainNum];
+	const int ChainBonusBox[20] = { 0,8,16,32,64,96,128,160,192,224,256,288,320,352,388,416,448,480,512,512 };
+	int ChainBonus = 0;
+	if (ChainNum>=19) ChainBonus = ChainBonusBox[19];
+	else ChainBonus = ChainBonusBox[ChainNum];
 
 	int VanishNumBonus = 0;
 	if (VanishedPuyo == 5) VanishNumBonus = 2;
