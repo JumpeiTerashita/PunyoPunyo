@@ -9,6 +9,7 @@
 Puyo::Puyo(int _x, int _y, int _colors)
 {
 	setLifeTime(1);
+	//Status = 0;
 	_state = STATE_FALL;
 	_is_checked = false;
 	_is_rotate = false;
@@ -26,7 +27,6 @@ Puyo::Puyo(int _x, int _y, STATE _seq, COLORPATTERN _colorNumber)
 	_state = _seq;
 	_is_checked = false;
 	_will_delete = false;
-
 	pos.set(_x, _y);
 	ColorNumber = _colorNumber;
 	ColorSetup(ColorNumber);
@@ -55,8 +55,13 @@ void Puyo::Fall()
 {
 	SceneIngame* Scene = SceneIngame::getInstance();
 	if (_state == STATE_FREEFALL) setSequence(&Puyo::FreeFall);
-
-	if (Scene->Keyflag_left)
+	unsigned char KeyFlag = Scene->KeyFlag;
+	int isLeft = KeyFlag & Scene->KeyFlag_LEFT;
+	int isRight = KeyFlag & Scene->KeyFlag_RIGHT;
+	int isTurn_CounterClockwise = KeyFlag & Scene->KeyFlag_Turn_CounterClockwise;
+	int isTurn_Clockwise = KeyFlag & Scene->KeyFlag_Turn_Clockwise;
+	if (isLeft)
+		//if (Scene->Keyflag_left)
 	{
 		if (!Search_There_is(pos._x - 1, pos._y))
 		{
@@ -80,8 +85,8 @@ void Puyo::Fall()
 			}
 		}
 	}
-
-	if (Scene->Keyflag_right)
+	if (isRight)
+		//if (Scene->Keyflag_right)
 	{
 		if (!Search_There_is(pos._x + 1, pos._y))
 		{
@@ -106,27 +111,29 @@ void Puyo::Fall()
 		}
 	}
 
-	if (Scene->Keyflag_turnCounterClockwise)	TurnCounterClockwise();
-	else if (Scene->Keyflag_turnClockwise)	TurnClockwise();
+	//if (Scene->Keyflag_turnCounterClockwise)	
+	if (isTurn_CounterClockwise) TurnCounterClockwise();
+	if (isTurn_Clockwise) TurnClockwise();
+		//if (Scene->Keyflag_turnClockwise)	TurnClockwise();
 
 	if (getFrame() >= Scene->FallLimit)
-	{
+		{
 
-		if (!UnderCollision())
-		{
-			delMap(pos._x, pos._y);
-			pos._y--;
-			setFrame(0);
-			map(pos._x, pos._y, STATE_FALL);
-		}
-		else if (pos._x == 3 && pos._y >= 12)
-		{
-			if (Search_There_is(pos._x, pos._y - 1) && !Search_is_Falling(pos._x, pos._y - 1))
+			if (!UnderCollision())
 			{
-				Scene->GameOver = true;
+				delMap(pos._x, pos._y);
+				pos._y--;
+				setFrame(0);
+				map(pos._x, pos._y, STATE_FALL);
+			}
+			else if (pos._x == 3 && pos._y >= 12)
+			{
+				if (Search_There_is(pos._x, pos._y - 1) && !Search_is_Falling(pos._x, pos._y - 1))
+				{
+					Scene->GameOver = true;
+				}
 			}
 		}
-	}
 
 
 

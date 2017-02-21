@@ -16,6 +16,12 @@ enum COLORPATTERN
 	COLOR_MAX
 };
 
+enum STATUS
+{
+	IS_CHECKED,
+	IS_ROTATE,
+	WILL_DELETE
+};
 
 class Puyo :public GameObject, public Sequence<Puyo>
 {
@@ -33,6 +39,9 @@ public:
 	COLORPATTERN ColorNumber;
 	
 	float size;
+	unsigned char Status;
+	
+
 	bool _is_checked;
 	bool _is_rotate;
 	bool _will_delete;

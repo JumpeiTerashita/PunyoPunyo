@@ -4,6 +4,10 @@
 #include "glut.h"
 #include <string.h>
 
+unsigned const char Is_checked = 1 << IS_CHECKED;
+unsigned const char Is_rotate = 1 << IS_ROTATE;
+unsigned const char Will_Delete = 1 << WILL_DELETE;
+
 SceneIngame::SceneIngame()
 {
 	First = nullptr;
@@ -65,6 +69,7 @@ void DrawString(const char* str)
 void SceneIngame::PuyoCreate()
 {
 	First = new Puyo(3, 12, 4);
+	//First->Status |= Is_rotate;
 	First->_is_rotate = true;
 	Second = new Puyo(3, 13, 4);
 	/*if (AllVanishedNum<20)
@@ -103,12 +108,15 @@ void SceneIngame::CreatedMap()
 void SceneIngame::CheckPuyo(int _x, int _y)
 {
 	SearchColor = map[_y][_x]->ColorNumber;
-
+	
 	//âE
 	if (_x + 1 < 7 && map[_y][_x + 1] != nullptr)
 	{
+		
+		//if ((int)(map[_y][_x + 1]->Status&Is_checked)==0)
 		if (map[_y][_x + 1]->_is_checked == false)
 		{
+			//map[_y][_x + 1]->Status |= Is_checked;
 			map[_y][_x + 1]->_is_checked = true;
 			if (map[_y][_x + 1]->ColorNumber == SearchColor)
 			{
@@ -121,8 +129,10 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	//è„
 	if (_y + 1 < 15 && map[_y + 1][_x] != nullptr)
 	{
+		//if ((int)(map[_y+1][_x]->Status&Is_checked)==0)
 		if (map[_y + 1][_x]->_is_checked == false)
 		{
+			//map[_y+1][_x]->Status |= Is_checked;
 			map[_y + 1][_x]->_is_checked = true;
 			if (map[_y + 1][_x]->ColorNumber == SearchColor)
 			{
@@ -135,9 +145,11 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	//ç∂
 	if (_x - 1 > 0 && map[_y][_x - 1] != nullptr)
 	{
+		//if ((int)(map[_y][_x-1]->Status&Is_checked)==0)
 		if (map[_y][_x - 1]->_is_checked == false)
 		{
-			map[_y][_x - 1]->_is_checked = true;
+			//map[_y][_x-1]->Status |= Is_checked;
+			map[_y][_x-1]->_is_checked = true;
 			if (map[_y][_x - 1]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
@@ -149,9 +161,11 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	//â∫
 	if (_y > 0 && map[_y - 1][_x] != nullptr)
 	{
+		//if ((int)(map[_y-1][_x]->Status&Is_checked)==0)
 		if (map[_y - 1][_x]->_is_checked == false)
 		{
-			map[_y - 1][_x]->_is_checked = true;
+			//map[_y-1][_x]->Status |= Is_checked;
+			map[_y-1][_x]->_is_checked = true;
 			if (map[_y - 1][_x]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
@@ -194,8 +208,10 @@ void SceneIngame::DeleteMarkSet()
 			{
 				if (map[i][j] != nullptr)
 				{
-					if (map[i][j]->_is_checked == true && map[i][j]->ColorNumber == SearchColor)
+				//if ((int)(map[i][j]->Status&Is_checked)&&map[i][j]->ColorNumber==SearchColor)
+				if (map[i][j]->_is_checked == true && map[i][j]->ColorNumber == SearchColor)
 					{
+						//map[i][j]->Status |= Will_Delete;
 						map[i][j]->_will_delete = true;
 					}
 				}
@@ -208,7 +224,7 @@ void SceneIngame::DeleteMarkSet()
 		for (int j = 1; j < 7; j++)
 		{
 			if (map[i][j] == nullptr) continue;
-
+			//map[i][j]->Status &= ~Is_checked;
 			map[i][j]->_is_checked = false;
 		}
 	}
@@ -223,6 +239,7 @@ void SceneIngame::VanishPuyo()
 		{
 			if (map[i][j] != nullptr)
 			{
+				//if ((int)(map[i][j]->Status&Will_Delete))
 				if (map[i][j]->_will_delete == true)
 				{
 					VanishCounter++;
@@ -329,10 +346,10 @@ void SceneIngame::KeyJudge()
 		{
 			if (GameManager::getInstance()->MoveSearch(1))
 			{
-				Keyflag_right = true;
+				KeyFlag |= KeyFlag_RIGHT;
 			}
 		}
-		else Keyflag_right = true;
+		else KeyFlag |= KeyFlag_RIGHT;
 	}
 	
 	if (_SpecialKey == GLUT_KEY_LEFT || _Key == 'a')
@@ -341,16 +358,16 @@ void SceneIngame::KeyJudge()
 		{
 			if (GameManager::getInstance()->MoveSearch(-1))
 			{
-				Keyflag_left = true;
+				KeyFlag |= KeyFlag_LEFT;
 			}
 		}
-		else Keyflag_left = true;
+		else KeyFlag |= KeyFlag_LEFT;
 	}
-	if (_UpKey == 'j') Keyflag_turnCounterClockwise = true;
-	if (_UpKey == 'k') Keyflag_turnClockwise = true;
+	if (_UpKey == 'j') KeyFlag |= KeyFlag_Turn_CounterClockwise;
+	if (_UpKey == 'k') KeyFlag |= KeyFlag_Turn_Clockwise;
 	if (_SpecialKey == GLUT_KEY_DOWN || _Key == 's')
 	{
-		ScoreCounter += 1;
+		ScoreCounter++;
 		FallLimit = 0;
 	}
 	else FallLimit = 30;
@@ -358,11 +375,11 @@ void SceneIngame::KeyJudge()
 
 void SceneIngame::Playing()
 {
-
-	Keyflag_left = false;
+	KeyFlag = 0;
+	/*Keyflag_left = false;
 	Keyflag_right = false;
 	Keyflag_turnCounterClockwise = false;
-	Keyflag_turnClockwise = false;
+	Keyflag_turnClockwise = false;*/
 	KeyJudge();
 
 	if (GameOver)
@@ -532,7 +549,7 @@ void SceneIngame::UIDisp()
 	glEnd();
 
 	char Score[256];
-	sprintf(Score, "%08d", (int)ScoreCounter);
+	sprintf(Score, "%08d", ScoreCounter);
 	char Block[256];
 	sprintf(Block, "%8d", AllVanishedNum);
 	if (ScoreCounter >= HighScore)

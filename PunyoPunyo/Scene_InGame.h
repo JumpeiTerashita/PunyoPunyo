@@ -4,6 +4,14 @@
 #include "Puyo.h"
 #include "GameObject.h"
 
+enum KEYFLAGS
+{
+	KEY_LEFT,
+	KEY_RIGHT,
+	KEY_TURN_COUNTERCLOCKWISE,
+	KEY_TURN_CLOCKWISE
+};
+
 class SceneIngame : public Sequence<SceneIngame>
 {
 public:
@@ -13,10 +21,11 @@ public:
 	static SceneIngame* getInstance();
 
 	int PuyoColorsNum;
-	bool GameOver;
+	
 	Puyo* map[15][8];
-	float ScoreCounter;
+	int ScoreCounter;
 	int FallLimit;
+	bool GameOver;
 	bool _is_vertical;
 
 	void PuyoCreate();
@@ -30,13 +39,14 @@ public:
 	bool Search_State_is(STATE _state);
 	int Search_States_are(STATE _state);
 	int HighScore;
-	bool Keyflag_left;
-	bool Keyflag_right;
-	bool Keyflag_turnCounterClockwise;
-	bool Keyflag_turnClockwise;
-private:
-	
 
+	unsigned char KeyFlag;
+	unsigned const char KeyFlag_LEFT = 1 << KEY_LEFT;
+	unsigned const char KeyFlag_RIGHT = 1 << KEY_RIGHT;
+	unsigned const char KeyFlag_Turn_CounterClockwise = 1 << KEY_TURN_COUNTERCLOCKWISE;
+	unsigned const char KeyFlag_Turn_Clockwise = 1 << KEY_TURN_CLOCKWISE;
+
+private:
 
 	int VanishCounter;
 	int AllVanishedNum;
@@ -54,7 +64,7 @@ private:
 
 	unsigned char* pixels = (unsigned char*)malloc(300 * 300 * 3);
 	FILE *pFile;
-	
+
 	void UIDisp();
 	void DelScoreCalc();
 
