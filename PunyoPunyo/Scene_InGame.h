@@ -12,6 +12,8 @@ enum KEYFLAGS
 	KEY_TURN_CLOCKWISE
 };
 
+
+
 class SceneIngame : public Sequence<SceneIngame>
 {
 public:
@@ -36,15 +38,11 @@ public:
 	void KeyJudge();
 
 
-	bool Search_State_is(STATE _state);
-	int Search_States_are(STATE _state);
+	
 	int HighScore;
 
 	unsigned char KeyFlag;
-	unsigned const char KeyFlag_LEFT = 1 << KEY_LEFT;
-	unsigned const char KeyFlag_RIGHT = 1 << KEY_RIGHT;
-	unsigned const char KeyFlag_Turn_CounterClockwise = 1 << KEY_TURN_COUNTERCLOCKWISE;
-	unsigned const char KeyFlag_Turn_Clockwise = 1 << KEY_TURN_CLOCKWISE;
+	
 
 private:
 
@@ -72,3 +70,4 @@ private:
 };
 
 extern unsigned char _Key;
+extern unsigned const char KeyFlag_LEFT,KeyFlag_RIGHT ,KeyFlag_Turn_CounterClockwise,KeyFlag_Turn_Clockwise;

@@ -10,7 +10,8 @@ Puyo::Puyo(int _x, int _y, int _colors)
 {
 	setLifeTime(1);
 	//Status = 0;
-	_state = STATE_FALL;
+	_is_falling = true;
+	_is_freefall = false;
 	_is_checked = false;
 	_is_rotate = false;
 	_will_delete = false;
@@ -21,15 +22,14 @@ Puyo::Puyo(int _x, int _y, int _colors)
 
 }
 
-Puyo::Puyo(int _x, int _y, STATE _seq, COLORPATTERN _colorNumber)
+Puyo::Puyo(int _x, int _y,COLORPATTERN _setColor)
 {
 	setLifeTime(1);
-	_state = _seq;
 	_is_checked = false;
 	_will_delete = false;
 	pos.set(_x, _y);
-	ColorNumber = _colorNumber;
-	ColorSetup(ColorNumber);
+	ColorNumber = _setColor;
+	ColorSetup(_setColor);
 }
 
 void Puyo::ObjUpdate()
@@ -45,31 +45,34 @@ void Puyo::delMap(int _x, int _y)
 	SceneIngame::getInstance()->map[_y][_x] = nullptr;
 }
 
-void Puyo::map(int _x, int _y, STATE _seq)
+void Puyo::map(int _x, int _y,COLORPATTERN _setColor)
 {
-	SceneIngame::getInstance()->map[_y][_x] = new Puyo(_x, _y, _seq, ColorNumber);
+	SceneIngame::getInstance()->map[_y][_x] = new Puyo(_x, _y, _setColor);
 }
 
 
 void Puyo::Fall()
 {
 	SceneIngame* Scene = SceneIngame::getInstance();
-	if (_state == STATE_FREEFALL) setSequence(&Puyo::FreeFall);
+	if (_is_freefall) setSequence(&Puyo::FreeFall);
+	//if (_state == STATE_FREEFALL) setSequence(&Puyo::FreeFall);
 	unsigned char KeyFlag = Scene->KeyFlag;
-	int isLeft = KeyFlag & Scene->KeyFlag_LEFT;
-	int isRight = KeyFlag & Scene->KeyFlag_RIGHT;
-	int isTurn_CounterClockwise = KeyFlag & Scene->KeyFlag_Turn_CounterClockwise;
-	int isTurn_Clockwise = KeyFlag & Scene->KeyFlag_Turn_Clockwise;
+	int isLeft = KeyFlag & KeyFlag_LEFT;
+	int isRight = KeyFlag & KeyFlag_RIGHT;
+	int isTurn_CounterClockwise = KeyFlag & KeyFlag_Turn_CounterClockwise;
+	int isTurn_Clockwise = KeyFlag & KeyFlag_Turn_Clockwise;
+	//if (Scene->Keyflag_left)
 	if (isLeft)
-		//if (Scene->Keyflag_left)
 	{
+		
+
 		if (!Search_There_is(pos._x - 1, pos._y))
 		{
 			if (pos._x > 1)
 			{
 				delMap(pos._x, pos._y);
 				pos._x--;
-				map(pos._x, pos._y, STATE_FALL);
+				map(pos._x, pos._y,ColorNumber);
 			}
 		}
 		else
@@ -80,7 +83,7 @@ void Puyo::Fall()
 				{
 					delMap(pos._x, pos._y);
 					pos._x--;
-					map(pos._x, pos._y, STATE_FALL);
+					map(pos._x, pos._y,ColorNumber);
 				}
 			}
 		}
@@ -94,7 +97,7 @@ void Puyo::Fall()
 			{
 				delMap(pos._x, pos._y);
 				pos._x++;
-				map(pos._x, pos._y, STATE_FALL);
+				map(pos._x, pos._y,ColorNumber);
 			}
 		}
 		else
@@ -105,7 +108,7 @@ void Puyo::Fall()
 				{
 					delMap(pos._x, pos._y);
 					pos._x++;
-					map(pos._x, pos._y, STATE_FALL);
+					map(pos._x, pos._y,ColorNumber);
 				}
 			}
 		}
@@ -124,15 +127,9 @@ void Puyo::Fall()
 				delMap(pos._x, pos._y);
 				pos._y--;
 				setFrame(0);
-				map(pos._x, pos._y, STATE_FALL);
+				map(pos._x, pos._y,ColorNumber);
 			}
-			else if (pos._x == 3 && pos._y >= 12)
-			{
-				if (Search_There_is(pos._x, pos._y - 1) && !Search_is_Falling(pos._x, pos._y - 1))
-				{
-					Scene->GameOver = true;
-				}
-			}
+			
 		}
 
 
@@ -154,7 +151,7 @@ void Puyo::TurnCounterClockwise()
 				delMap(pos._x, pos._y);
 				pos._x++;
 				pos._y++;
-				map(pos._x, pos._y, STATE_FALL);
+				map(pos._x, pos._y,ColorNumber);
 				Scene->_is_vertical = false;
 				return;
 			}
@@ -166,7 +163,7 @@ void Puyo::TurnCounterClockwise()
 				delMap(pos._x, pos._y);
 				pos._x--;
 				pos._y++;
-				map(pos._x, pos._y, STATE_FALL);
+				map(pos._x, pos._y,ColorNumber);
 				Scene->_is_vertical = true;
 				return;
 			}
@@ -178,7 +175,7 @@ void Puyo::TurnCounterClockwise()
 				delMap(pos._x, pos._y);
 				pos._x--;
 				pos._y--;
-				map(pos._x, pos._y, STATE_FALL);
+				map(pos._x, pos._y,ColorNumber);
 				Scene->_is_vertical = false;
 				return;
 			}
@@ -190,7 +187,7 @@ void Puyo::TurnCounterClockwise()
 				delMap(pos._x, pos._y);
 				pos._x++;
 				pos._y--;
-				map(pos._x, pos._y, STATE_FALL);
+				map(pos._x, pos._y,ColorNumber);
 				Scene->_is_vertical = true;
 				return;
 			}
@@ -210,7 +207,7 @@ void Puyo::TurnClockwise()
 				delMap(pos._x, pos._y);
 				pos._x--;
 				pos._y++;
-				map(pos._x, pos._y, STATE_FALL);
+				map(pos._x, pos._y,ColorNumber);
 				Scene->_is_vertical = false;
 				return;
 			}
@@ -222,7 +219,7 @@ void Puyo::TurnClockwise()
 				delMap(pos._x, pos._y);
 				pos._x++;
 				pos._y++;
-				map(pos._x, pos._y, STATE_FALL);
+				map(pos._x, pos._y,ColorNumber);
 				Scene->_is_vertical = true;
 				return;
 			}
@@ -234,7 +231,7 @@ void Puyo::TurnClockwise()
 				delMap(pos._x, pos._y);
 				pos._x++;
 				pos._y--;
-				map(pos._x, pos._y, STATE_FALL);
+				map(pos._x, pos._y,ColorNumber);
 				Scene->_is_vertical = false;
 				return;
 			}
@@ -246,7 +243,7 @@ void Puyo::TurnClockwise()
 				delMap(pos._x, pos._y);
 				pos._x--;
 				pos._y--;
-				map(pos._x, pos._y, STATE_FALL);
+				map(pos._x, pos._y,ColorNumber);
 				Scene->_is_vertical = true;
 				return;
 			}
@@ -264,32 +261,32 @@ void Puyo::FreeFall()
 			delMap(pos._x, pos._y);
 			pos._y--;
 			setFrame(0);
-			map(pos._x, pos._y, STATE_FALL);
+			map(pos._x, pos._y,ColorNumber);
 		}
 
 	}
 }
 
-void Puyo::Set()
-{
-	return;
-}
 
 bool Puyo::UnderCollision()
 {
 	SceneIngame* Scene = SceneIngame::getInstance();
 	if (pos._y == 1)
 	{
-		_state = STATE_SET;
-		map(pos._x, pos._y, STATE_SET);
+		
+		_is_falling = false;
+		_is_freefall = false;
+		map(pos._x, pos._y,ColorNumber);
 		setLifeTime(0);
 		return true;
 	}
 
 	if (Search_There_is(pos._x, pos._y - 1) && !Search_is_Falling(pos._x, pos._y - 1))
 	{
-		_state = STATE_SET;
-		map(pos._x, pos._y, STATE_SET);
+		
+		_is_falling = false;
+		_is_freefall = false;
+		map(pos._x, pos._y,ColorNumber);
 		setLifeTime(0);
 		return true;
 	}
@@ -297,8 +294,10 @@ bool Puyo::UnderCollision()
 	{
 		if (pos._y == 2 || Search_There_is(pos._x, pos._y - 2))
 		{
-			_state = STATE_SET;
-			map(pos._x, pos._y, STATE_SET);
+			
+			_is_falling = false;
+			_is_freefall = false;
+			map(pos._x, pos._y,ColorNumber);
 			setLifeTime(0);
 			return true;
 		}
@@ -309,7 +308,7 @@ bool Puyo::UnderCollision()
 bool Puyo::Search_is_Falling(int _x, int _y)
 {
 	if (SceneIngame::getInstance()->map[_y][_x] == nullptr) return false;
-	if (SceneIngame::getInstance()->map[_y][_x]->_state == STATE_FALL) return true;
+	if (SceneIngame::getInstance()->map[_y][_x]->_is_falling) return true;
 	return false;
 }
 

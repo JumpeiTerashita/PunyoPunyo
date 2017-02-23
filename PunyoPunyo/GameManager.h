@@ -48,7 +48,7 @@ private:
 	}
 };
 
-//TODO class SceneIngame を　別ファイルに引っ越し
+
 
 
 

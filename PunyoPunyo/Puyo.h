@@ -29,53 +29,39 @@ class Puyo :public GameObject, public Sequence<Puyo>
 	
 	//TODO public private protected 分ける
 public:
-	//void CreatePuyo();
+
 	Puyo() {};
 	Puyo(int _x, int _y,int _colors);
-
-	Puyo(int _x, int _y, STATE _seq, COLORPATTERN _colorNumber);
+	Puyo(int _x, int _y, COLORPATTERN _setColor);
 	~Puyo() {};
-	
 	COLORPATTERN ColorNumber;
-	
-	float size;
 	unsigned char Status;
 	
-
 	bool _is_checked;
 	bool _is_rotate;
+	bool _is_falling;
+	bool _is_freefall;
 	bool _will_delete;
+
+	void Fall();
+	void FreeFall();
 	
-
-
-	void delMap(int _x,int _y);
-	void map(int _x,int _y,STATE _seq);
-
-	//TODO ColorSetup　ダサい！！！
+	void ObjUpdate();
+	void ObjDisp();
 
 	float colorStatus[4];
 	void ColorSetup(COLORPATTERN _colorNumber);
-	
-	void Fall();
-
-	//TODO turn　回しながらひっかけるとちぎれる
-	void TurnCounterClockwise();
-	void TurnClockwise();
-
-	void Set();
-	void FreeFall();
-
-	
-	
-	bool UnderCollision();
-
-	void ObjUpdate();
-	void ObjDisp();
+private:
+	void delMap(int _x, int _y);
+	void map(int _x, int _y, COLORPATTERN _setColor);
 	bool Search_There_is(int _x, int _y);
 	bool Search_is_Falling(int _x, int _y);
-private:
+	//TODO ColorSetup　ダサい！！！
 	
-	
+	void TurnCounterClockwise();
+	void TurnClockwise();
+	bool UnderCollision();
+
 
 };
 

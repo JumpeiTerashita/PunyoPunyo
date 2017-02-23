@@ -2,17 +2,6 @@
 
 #include "Vec2.h"
 
-
-
-enum STATE
-{
-	STATE_FALL,
-	STATE_FREEFALL,
-	STATE_TOUCHDOWN,
-	STATE_AFTERDELETE,
-	STATE_SET
-};
-
 class GameObject
 {
 private:
@@ -23,7 +12,6 @@ private:
 public:
 	vec2 pos;
 	
-	STATE _state;
 
 	GameObject() {
 		LifeTime = -1;

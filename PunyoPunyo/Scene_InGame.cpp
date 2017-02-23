@@ -4,6 +4,11 @@
 #include "glut.h"
 #include <string.h>
 
+static unsigned const char KeyFlag_LEFT = 1 << KEY_LEFT;
+static unsigned const char KeyFlag_RIGHT = 1 << KEY_RIGHT;
+static unsigned const char KeyFlag_Turn_CounterClockwise = 1 << KEY_TURN_COUNTERCLOCKWISE;
+static unsigned const char KeyFlag_Turn_Clockwise = 1 << KEY_TURN_CLOCKWISE;
+
 unsigned const char Is_checked = 1 << IS_CHECKED;
 unsigned const char Is_rotate = 1 << IS_ROTATE;
 unsigned const char Will_Delete = 1 << WILL_DELETE;
@@ -36,7 +41,7 @@ SceneIngame::SceneIngame()
 	CreatedMap();
 	PuyoCreate();
 	FallLimit = 30;
-	
+
 	PuyoCounter = 0;
 	ScoreCounter = 0;
 	ChainCounter = 0;
@@ -98,21 +103,28 @@ void SceneIngame::PuyoCreate()
 
 void SceneIngame::CreatedMap()
 {
+	if (map[12][3] != nullptr)
+	{
+		GameOver = true;
+		return;
+	}
 	GameManager::getInstance()->addObject(First);
 	GameManager::getInstance()->addObject(Second);
 	map[First->pos._y][First->pos._x] = First;
 	map[Second->pos._y][Second->pos._x] = Second;
+	_is_vertical = true;
+	
 	return;
 }
 
 void SceneIngame::CheckPuyo(int _x, int _y)
 {
 	SearchColor = map[_y][_x]->ColorNumber;
-	
+
 	//右
 	if (_x + 1 < 7 && map[_y][_x + 1] != nullptr)
 	{
-		
+
 		//if ((int)(map[_y][_x + 1]->Status&Is_checked)==0)
 		if (map[_y][_x + 1]->_is_checked == false)
 		{
@@ -149,7 +161,7 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 		if (map[_y][_x - 1]->_is_checked == false)
 		{
 			//map[_y][_x-1]->Status |= Is_checked;
-			map[_y][_x-1]->_is_checked = true;
+			map[_y][_x - 1]->_is_checked = true;
 			if (map[_y][_x - 1]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
@@ -165,7 +177,7 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 		if (map[_y - 1][_x]->_is_checked == false)
 		{
 			//map[_y-1][_x]->Status |= Is_checked;
-			map[_y-1][_x]->_is_checked = true;
+			map[_y - 1][_x]->_is_checked = true;
 			if (map[_y - 1][_x]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
@@ -190,7 +202,7 @@ void SceneIngame::DeleteStart()
 	}
 	VanishPuyo();
 	if (VanishCounter == 0) setSequence(&SceneIngame::FinishedVanish);
-	else 
+	else
 	{
 		DelScoreCalc();	//TODO 連鎖時スコア計算修正
 		ChainCounter++;
@@ -208,8 +220,8 @@ void SceneIngame::DeleteMarkSet()
 			{
 				if (map[i][j] != nullptr)
 				{
-				//if ((int)(map[i][j]->Status&Is_checked)&&map[i][j]->ColorNumber==SearchColor)
-				if (map[i][j]->_is_checked == true && map[i][j]->ColorNumber == SearchColor)
+					//if ((int)(map[i][j]->Status&Is_checked)&&map[i][j]->ColorNumber==SearchColor)
+					if (map[i][j]->_is_checked == true && map[i][j]->ColorNumber == SearchColor)
 					{
 						//map[i][j]->Status |= Will_Delete;
 						map[i][j]->_will_delete = true;
@@ -242,6 +254,7 @@ void SceneIngame::VanishPuyo()
 				//if ((int)(map[i][j]->Status&Will_Delete))
 				if (map[i][j]->_will_delete == true)
 				{
+					//TODO VanishCounter Colorごとのカウントも！
 					VanishCounter++;
 					map[i][j] = nullptr;
 				}
@@ -249,7 +262,9 @@ void SceneIngame::VanishPuyo()
 				{
 					COLORPATTERN RefallColor = map[i][j]->ColorNumber;
 					map[i][j] = nullptr;
-					Puyo* Refall = new Puyo(j, i, STATE_AFTERDELETE, RefallColor);
+					Puyo* Refall = new Puyo(j, i,RefallColor);
+					Refall->_is_falling = true;
+					Refall->_is_freefall = true;
 					GameManager::getInstance()->addObject(Refall);
 					Refall->setSequence(&Puyo::FreeFall);
 					map[i][j] = Refall;
@@ -257,73 +272,8 @@ void SceneIngame::VanishPuyo()
 			}
 		}
 	}
-	
-}
 
-//void SceneIngame::DeleteStart()
-//{
-//	for (int i = 1; i < 15; i++)
-//	{
-//		for (int j = 1; j < 7; j++)
-//		{
-//			if (map[i][j] == nullptr) continue;
-//			PuyoCounter = 0;
-//			CheckPuyo(j, i);
-//			DeleteMarkSet();
-//		}
-//	}
-//
-//}
-//
-//
-//void SceneIngame::DeleteMarkSet()
-//{
-//	VanishCounter = 0;
-//	if (PuyoCounter >= 4)
-//	{
-//		for (int i = 1; i < 15; i++)
-//		{
-//			for (int j = 1; j < 7; j++)
-//			{
-//
-//				if (map[i][j] != nullptr)
-//				{
-//					if (map[i][j]->_is_checked == true && map[i][j]->ColorNumber == SearchColor)
-//					{
-//						VanishCounter++;
-//						map[i][j] = nullptr;
-//					}
-//					else
-//					{
-//						COLORPATTERN RefallColor = map[i][j]->ColorNumber;
-//						map[i][j] = nullptr;
-//						Puyo* Refall = new Puyo(j, i, STATE_AFTERDELETE, RefallColor);
-//						GameManager::getInstance()->addObject(Refall);
-//						Refall->setSequence(&Puyo::FreeFall);
-//						map[i][j] = Refall;
-//					}
-//				}
-//
-//			}
-//		}
-//		ChainCounter++;
-//		DelScoreCalc();
-//	}
-//
-//	for (int i = 1; i < 15; i++)
-//	{
-//		for (int j = 1; j < 7; j++)
-//		{
-//			if (map[i][j] == nullptr) continue;
-//
-//			map[i][j]->_is_checked = false;
-//
-//		}
-//	}
-//
-//
-//
-//}
+}
 
 void SceneIngame::WaitingRestart()
 {
@@ -335,7 +285,7 @@ void SceneIngame::WaitingRestart()
 		glClear(GL_COLOR_BUFFER_BIT);//クリア（色情報）
 		GameManager::getInstance()->setSequence(&GameManager::Scene_Title);
 	}
-	
+
 }
 
 void SceneIngame::KeyJudge()
@@ -344,22 +294,24 @@ void SceneIngame::KeyJudge()
 	{
 		if (_is_vertical)
 		{
-			if (GameManager::getInstance()->MoveSearch(1))
+			if (GameManager::getInstance()->MoveSearch(1) == true)
 			{
 				KeyFlag |= KeyFlag_RIGHT;
 			}
+			else return;
 		}
 		else KeyFlag |= KeyFlag_RIGHT;
 	}
-	
+
 	if (_SpecialKey == GLUT_KEY_LEFT || _Key == 'a')
 	{
 		if (_is_vertical)
 		{
-			if (GameManager::getInstance()->MoveSearch(-1))
+			if (GameManager::getInstance()->MoveSearch(-1) == true)
 			{
 				KeyFlag |= KeyFlag_LEFT;
 			}
+			else return;
 		}
 		else KeyFlag |= KeyFlag_LEFT;
 	}
@@ -387,7 +339,7 @@ void SceneIngame::Playing()
 		WaitingRestart();
 		setSequence(&SceneIngame::WaitingRestart);
 	}
-	if (GameManager::getInstance()->GetObjectNum()==0)
+	if (GameManager::getInstance()->GetObjectNum() == 0)
 	{
 		setSequence(&SceneIngame::DeleteStart);
 	}
@@ -405,7 +357,11 @@ void SceneIngame::update()
 {
 	if (GameManager::getInstance()->GetObjectNum() == 1)
 	{
-		(*GameManager::getInstance()->GetObject())->_state = STATE_FREEFALL;
+		//(*GameManager::getInstance()->GetObject())->_state = STATE_FREEFALL;
+		//(*it)->
+		Puyo* puyoit = dynamic_cast<Puyo*>(*GameManager::getInstance()->GetObject());
+		puyoit->_is_freefall = true;
+	
 	}
 	runSequence();
 }
@@ -418,7 +374,7 @@ void SceneIngame::DelScoreCalc()
 	const int ChainNum = ChainCounter;
 	const int ChainBonusBox[20] = { 0,8,16,32,64,96,128,160,192,224,256,288,320,352,388,416,448,480,512,512 };
 	int ChainBonus = 0;
-	if (ChainNum>=19) ChainBonus = ChainBonusBox[19];
+	if (ChainNum >= 19) ChainBonus = ChainBonusBox[19];
 	else ChainBonus = ChainBonusBox[ChainNum];
 
 	int VanishNumBonus = 0;
@@ -616,7 +572,7 @@ void SceneIngame::display()
 			glPushMatrix();
 			{
 				glColor4f(map[i][j]->colorStatus[0], map[i][j]->colorStatus[1], map[i][j]->colorStatus[2], map[i][j]->colorStatus[3]);
-				glTranslatef(-0.7 + (j - 1)*0.15, -0.75 + (i-1)*0.15, 1);
+				glTranslatef(-0.7 + (j - 1)*0.15, -0.75 + (i - 1)*0.15, 1);
 				glutSolidSphere(0.075, 180, 5);
 			}
 			glPopMatrix();
@@ -624,39 +580,5 @@ void SceneIngame::display()
 	}
 
 	return;
-}
-
-
-
-bool SceneIngame::Search_State_is(STATE _state)
-{
-	for (int i = 1; i < 15; i++)
-	{
-		for (int j = 1; j < 7; j++)
-		{
-			if (map[i][j] != nullptr&&map[i][j]->_state == _state)
-			{
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-int SceneIngame::Search_States_are(STATE _state)
-{
-	int Puyos = 0;
-	for (int i = 1; i < 15; i++)
-	{
-		for (int j = 1; j < 7; j++)
-		{
-			if (map[i][j] == nullptr) continue;
-			if (map[i][j] != nullptr&&map[i][j]->_state == _state)
-			{
-				Puyos++;
-			}
-		}
-	}
-	return Puyos;
 }
 
