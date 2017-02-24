@@ -1,9 +1,0 @@
-﻿C:\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V140\Microsoft.CppBuild.targets(392,5): warning MSB8028: The intermediate directory (Debug\) contains files shared from another project (Puyo!.vcxproj).  This can lead to incorrect clean and rebuild behavior.
-  GameManager.cpp
-  コードを生成中...
-  スキップ中... (関連する変更は検出されませんでした)
-  Source.cpp
-  Scene_InGame.cpp
-  Puyo.cpp
-  Puyo!.vcxproj -> C:\Users\vantan\Documents\Atelier\Children\PunyoPunyo\Debug\PunyoPunyo.exe
-  Puyo!.vcxproj -> C:\Users\vantan\Documents\Atelier\Children\PunyoPunyo\Debug\PunyoPunyo.pdb (Partial PDB)

@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Liblary">
+      <UniqueIdentifier>{06351658-22cb-4c94-86e0-6ac4556dd8ae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{e3f26f8b-8608-4e03-909b-ea5e952a2c42}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{42d1463f-c340-4a5e-b155-3ff74c985687}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Program\Liblary\Sequence.h">
+      <Filter>Liblary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Program\Liblary\Vec2.h">
+      <Filter>Liblary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Program\Engine\GameObject.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Program\Engine\InputManager.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Program\Game\GameManager.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Program\Game\Puyo.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Program\Game\Scene_InGame.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Program\glut.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Program\Engine\InputManager.cpp">
+      <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Program\Game\GameManager.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Program\Game\Puyo.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Program\Game\Scene_InGame.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Program\Game\Source.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
