@@ -2,6 +2,7 @@
 #include "Scene_InGame.h"
 #include "../Engine/InputManager.h"
 #include "../glut.h"
+#include "BitCalc.h"
 #include <string.h>
 
 static unsigned const char KeyFlag_LEFT = 1 << KEY_LEFT;
@@ -78,8 +79,8 @@ void SceneIngame::PuyoCreate()
 {
 	First = new Puyo(3, 12, 4);
 	//First->Status |= Is_rotate;
-	First->_is_rotate = true;
 	Second = new Puyo(3, 13, 4);
+	Second->_is_rotate = true;
 }
 
 void SceneIngame::CreatedMap()
@@ -94,7 +95,7 @@ void SceneIngame::CreatedMap()
 	map[First->pos._y][First->pos._x] = First;
 	map[Second->pos._y][Second->pos._x] = Second;
 	_is_vertical = true;
-	
+
 	return;
 }
 
@@ -182,10 +183,11 @@ void SceneIngame::DeleteStart()
 		}
 	}
 	VanishPuyo();
-	if (VanishCounter == 0) setSequence(&SceneIngame::FinishedVanish);
+	//if (VanishCounter == 0) 
+	if (!DeletePuyoStatus) setSequence(&SceneIngame::FinishedVanish);
 	else
 	{
-		DelScoreCalc();	
+		DelScoreCalc();
 		ChainCounter++;
 		setSequence(&SceneIngame::Playing);
 	}
@@ -223,18 +225,12 @@ void SceneIngame::DeleteMarkSet()
 	}
 }
 
-unsigned int SceneIngame::BitColPicker(COLORPATTERN _color)
-{
-	const unsigned int col = DeletePuyoStatus;
-	unsigned int mask = 255 << ColChanger(_color);
-	unsigned int picked = (col & mask) >> ColChanger(_color);
-	return picked;
-}
+
 
 void SceneIngame::VanishPuyo()
 {
 	DeletePuyoStatus = 0;
-	
+
 	VanishCounter = 0;
 	for (int i = 1; i < 15; i++)
 	{
@@ -245,7 +241,11 @@ void SceneIngame::VanishPuyo()
 				//if ((int)(map[i][j]->Status&Will_Delete))
 				if (map[i][j]->_will_delete == true)
 				{
-					
+					COLORPATTERN DelColor = map[i][j]->ColorNumber;
+					unsigned int AddStatus = BitColPicker(DelColor, DeletePuyoStatus);
+					AddStatus=1;
+					unsigned int ResultStatus = AddBit(DelColor, DeletePuyoStatus, AddStatus);
+					DeletePuyoStatus = ResultStatus;
 					//TODO VanishCounter Colorごとのカウントも！
 					//VanishCounter++;
 					map[i][j] = nullptr;
@@ -254,7 +254,7 @@ void SceneIngame::VanishPuyo()
 				{
 					COLORPATTERN RefallColor = map[i][j]->ColorNumber;
 					map[i][j] = nullptr;
-					Puyo* Refall = new Puyo(j, i,RefallColor);
+					Puyo* Refall = new Puyo(j, i, RefallColor);
 					Refall->_is_falling = true;
 					Refall->_is_freefall = true;
 					GameManager::getInstance()->addObject(Refall);
@@ -304,7 +304,7 @@ void SceneIngame::KeyJudge()
 			KeyFlag |= KeyFlag_RIGHT;
 		}
 	}
-	
+
 	if (_SpecialKey == GLUT_KEY_LEFT || _Key == 'a')
 	{
 		cc = 1;
@@ -322,8 +322,16 @@ void SceneIngame::KeyJudge()
 			KeyFlag |= KeyFlag_LEFT;
 		}
 	}
-	if (_UpKey == 'j') KeyFlag |= KeyFlag_Turn_CounterClockwise;
-	if (_UpKey == 'k') KeyFlag |= KeyFlag_Turn_Clockwise;
+	if (_UpKey == 'j')
+	{
+		cc = 1;
+		KeyFlag |= KeyFlag_Turn_CounterClockwise;
+	}
+	if (_UpKey == 'k')
+	{
+		cc = 1;
+		KeyFlag |= KeyFlag_Turn_Clockwise;
+	}
 	if (_SpecialKey == GLUT_KEY_DOWN || _Key == 's')
 	{
 		ScoreCounter++;
@@ -335,7 +343,7 @@ void SceneIngame::KeyJudge()
 void SceneIngame::Playing()
 {
 	KeyFlag = 0;
-	
+
 	KeyJudge();
 
 	if (GameOver)
@@ -343,7 +351,7 @@ void SceneIngame::Playing()
 		WaitingRestart();
 		setSequence(&SceneIngame::WaitingRestart);
 	}
-	if (GameManager::getInstance()->GetObjectNum() == 0)
+	if (GameManager::getInstance()->getObject().size() == 0)
 	{
 		setSequence(&SceneIngame::DeleteStart);
 	}
@@ -359,9 +367,9 @@ void SceneIngame::FinishedVanish()
 
 void SceneIngame::update()
 {
-	if (GameManager::getInstance()->getObject().size()==1)
+	if (GameManager::getInstance()->getObject().size() == 1)
 	{
-		
+
 		Puyo* puyoit = dynamic_cast<Puyo*>(*GameManager::getInstance()->getObjectsIterator());
 		puyoit->_is_freefall = true;
 	}
@@ -371,7 +379,53 @@ void SceneIngame::update()
 void SceneIngame::DelScoreCalc()
 {
 	//TODO 同時消しボーナス追加
+
+
+	const unsigned int VanishedPuyo = DeletePuyoStatus;
+	const int ChainNum = ChainCounter;
+	const int ChainBonusBox[20] = { 0,8,16,32,64,96,128,160,192,224,256,288,320,352,388,416,448,480,512,512 };
 	int PlusScore = 0;
+	int ChainBonus = 0;
+	int ColorResultStatus[4] = { 0 };
+	int VanishedNum = 0;
+	int VanishNumBonus = 0;
+	int VanishColorsNum = 0;
+	int VanishColorsBonus = 0;
+	const int VanishColorsBonusBox[5] = { 0,0,3,6,12 };
+
+	if (ChainNum >= 19) ChainBonus = ChainBonusBox[19];
+	else ChainBonus = ChainBonusBox[ChainNum];
+
+	for (int i = 0; i < 4; i++)
+	{
+		ColorResultStatus[i] = BitColPicker((COLORPATTERN)i, VanishedPuyo);
+		if (ColorResultStatus[i])
+		{
+			VanishedNum += ColorResultStatus[i];
+			AllVanishedNum += ColorResultStatus[i]; 
+			VanishColorsNum++;
+		}
+		if (ColorResultStatus[i] <= 4) continue;
+		if (ColorResultStatus[i] == 5) VanishNumBonus += 2;
+		if (ColorResultStatus[i] == 6) VanishNumBonus += 3;
+		if (ColorResultStatus[i] == 7) VanishNumBonus += 4;
+		if (ColorResultStatus[i] == 8) VanishNumBonus += 5;
+		if (ColorResultStatus[i] == 9) VanishNumBonus += 6;
+		if (ColorResultStatus[i] == 10) VanishNumBonus += 7;
+		if (ColorResultStatus[i] >= 11) VanishNumBonus += 10;
+	}
+
+	VanishColorsBonus = VanishColorsBonusBox[VanishColorsNum];
+
+	int AllBonus = ChainBonus + VanishNumBonus + VanishColorsBonus;
+	if (AllBonus == 0) AllBonus = 1;
+
+	PlusScore = VanishedNum * 10 * AllBonus;
+
+	ScoreCounter += PlusScore;
+
+
+	/*int PlusScore = 0;
 	const int VanishedPuyo = VanishCounter;
 	const int ChainNum = ChainCounter;
 	const int ChainBonusBox[20] = { 0,8,16,32,64,96,128,160,192,224,256,288,320,352,388,416,448,480,512,512 };
@@ -394,7 +448,7 @@ void SceneIngame::DelScoreCalc()
 	PlusScore = VanishedPuyo * 10 * AllBonus;
 
 	ScoreCounter += PlusScore;
-	AllVanishedNum += VanishedPuyo;
+	AllVanishedNum += VanishedPuyo;*/
 }
 
 void SceneIngame::UIDisp()

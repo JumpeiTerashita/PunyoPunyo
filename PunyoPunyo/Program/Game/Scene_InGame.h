@@ -59,12 +59,7 @@ private:
 	void FinishedVanish();
 	void DeleteStart();
 	void WaitingRestart();
-	unsigned int BitColPicker(COLORPATTERN _color);
-
-	inline int ColChanger(COLORPATTERN _color)
-	{
-		return (24 - 8 * _color);
-	}
+	
 	Puyo* First;
 	Puyo* Second;
 

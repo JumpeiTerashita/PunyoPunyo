@@ -23,9 +23,6 @@ enum STATUS
 
 class Puyo :public GameObject, public Sequence<Puyo>
 {
-
-	
-	//TODO public private protected •ª‚¯‚é
 public:
 
 	Puyo() {};

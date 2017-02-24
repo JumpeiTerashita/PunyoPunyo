@@ -67,9 +67,9 @@ void Puyo::Fall()
 		printf("------------------------------\n");
 	}
 	if (Scene->cc == 1) {
-
-		std::string col[4] = { "赤","緑","青", "黄" };
-		printf("%s\n", col[ColorNumber].c_str());
+		printf("x = %d y = %d\n", pos._x, pos._y);
+		/*std::string col[4] = { "赤","緑","青", "黄" };
+		printf("%s\n", col[ColorNumber].c_str());*/
 		c++;
 		c %= 2;
 	}
@@ -159,6 +159,9 @@ void Puyo::Fall()
 
 void Puyo::TurnCounterClockwise()
 {
+	//TODO 回転処理　離れても回る？
+	//原因 落ちてくるぷよの連結判定が甘い->接地してるぷよ中心に回る
+	//案　 ぷよの記録タイミング見直し？
 	SceneIngame* Scene = SceneIngame::getInstance();
 	if (_is_rotate)
 	{
