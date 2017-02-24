@@ -25,25 +25,45 @@ public:
 
 	int HighScore;
 	
-	std::list< GameObject* > getObjects();
+	inline std::list< GameObject* > getObject()
+	{
+		return objects;
+	}
 
-	inline int GetObjectNum() {
+
+	inline int GetObjectNum() 
+	{
 		return objects.size();
 	}
-	inline std::list< GameObject* >::iterator GetObject() {
+	inline std::list< GameObject* >::iterator getObjectsIterator() 
+	{
 		std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
 		return it;
+	}
+
+	static bool sortPosXPriority_Descending(const GameObject* objA, const GameObject* objB)
+	{
+		return objA->getPosXPriority() > objB->getPosXPriority(); //大きい順ソート
+	}
+
+	static bool sortPosXPriority_Ascending(const GameObject* objA, const GameObject* objB)
+	{
+		return objA->getPosXPriority() < objB->getPosXPriority(); //小さい順ソート
 	}
 
 private:
 	static GameManager* instance;
 	std::list< GameObject* > objects;
 	
-	static bool sortLogicPriority(const GameObject* objA, const GameObject* objB) {
-		return objA->getLogicPriority() < objB->getLogicPriority(); //小さい順ソート
+	static bool sortPosYPriority(const GameObject* objA, const GameObject* objB) 
+	{
+		return objA->getPosYPriority() < objB->getPosYPriority(); //小さい順ソート
 	}
 
-	static bool sortRenderPriority(const GameObject* objA, const GameObject* objB) {
+	
+
+	static bool sortRenderPriority(const GameObject* objA, const GameObject* objB) 
+	{
 		return objA->getRenderPriority() < objB->getRenderPriority(); //小さい順ソート
 	}
 };

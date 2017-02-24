@@ -15,6 +15,9 @@ unsigned const char Will_Delete = 1 << WILL_DELETE;
 
 SceneIngame::SceneIngame()
 {
+
+	cc = 0;
+
 	First = nullptr;
 	Second = nullptr;
 	pFile = fopen(
@@ -290,30 +293,45 @@ void SceneIngame::WaitingRestart()
 
 void SceneIngame::KeyJudge()
 {
+
+	cc = 0;
+
+	GameManager* Game = GameManager::getInstance();
 	if (_SpecialKey == GLUT_KEY_RIGHT || _Key == 'd')
 	{
+
+		cc = 1;
+
 		if (_is_vertical)
 		{
-			if (GameManager::getInstance()->MoveSearch(1) == true)
+			if (Game->MoveSearch(1) == true)
 			{
 				KeyFlag |= KeyFlag_RIGHT;
 			}
 			else return;
 		}
-		else KeyFlag |= KeyFlag_RIGHT;
+		else
+		{
+			KeyFlag |= KeyFlag_RIGHT;
+		}
 	}
-
+	
 	if (_SpecialKey == GLUT_KEY_LEFT || _Key == 'a')
 	{
+		cc = 1;
+
 		if (_is_vertical)
 		{
-			if (GameManager::getInstance()->MoveSearch(-1) == true)
+			if (Game->MoveSearch(-1) == true)
 			{
 				KeyFlag |= KeyFlag_LEFT;
 			}
 			else return;
 		}
-		else KeyFlag |= KeyFlag_LEFT;
+		else
+		{
+			KeyFlag |= KeyFlag_LEFT;
+		}
 	}
 	if (_UpKey == 'j') KeyFlag |= KeyFlag_Turn_CounterClockwise;
 	if (_UpKey == 'k') KeyFlag |= KeyFlag_Turn_Clockwise;
@@ -328,10 +346,7 @@ void SceneIngame::KeyJudge()
 void SceneIngame::Playing()
 {
 	KeyFlag = 0;
-	/*Keyflag_left = false;
-	Keyflag_right = false;
-	Keyflag_turnCounterClockwise = false;
-	Keyflag_turnClockwise = false;*/
+	
 	KeyJudge();
 
 	if (GameOver)
@@ -355,13 +370,11 @@ void SceneIngame::FinishedVanish()
 
 void SceneIngame::update()
 {
-	if (GameManager::getInstance()->GetObjectNum() == 1)
+	if (GameManager::getInstance()->getObject().size()==1)
 	{
-		//(*GameManager::getInstance()->GetObject())->_state = STATE_FREEFALL;
-		//(*it)->
-		Puyo* puyoit = dynamic_cast<Puyo*>(*GameManager::getInstance()->GetObject());
+		
+		Puyo* puyoit = dynamic_cast<Puyo*>(*GameManager::getInstance()->getObjectsIterator());
 		puyoit->_is_freefall = true;
-	
 	}
 	runSequence();
 }

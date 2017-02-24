@@ -9,7 +9,7 @@
 Puyo::Puyo(int _x, int _y, int _colors)
 {
 	setLifeTime(1);
-	//Status = 0;
+	Status = 0;
 	_is_falling = true;
 	_is_freefall = false;
 	_is_checked = false;
@@ -25,6 +25,9 @@ Puyo::Puyo(int _x, int _y, int _colors)
 Puyo::Puyo(int _x, int _y,COLORPATTERN _setColor)
 {
 	setLifeTime(1);
+	_is_falling = _is_falling;
+	_is_freefall = _is_freefall;
+	_is_rotate = _is_rotate;
 	_is_checked = false;
 	_will_delete = false;
 	pos.set(_x, _y);
@@ -35,7 +38,8 @@ Puyo::Puyo(int _x, int _y,COLORPATTERN _setColor)
 void Puyo::ObjUpdate()
 {
 	runSequence();
-	setLogicPriority(pos._y);
+	setPosYPriority(pos._y);
+	setPosXPriority(pos._x);
 }
 
 
@@ -48,12 +52,28 @@ void Puyo::delMap(int _x, int _y)
 void Puyo::map(int _x, int _y,COLORPATTERN _setColor)
 {
 	SceneIngame::getInstance()->map[_y][_x] = new Puyo(_x, _y, _setColor);
+
 }
 
 
+static int c = 0;
+
 void Puyo::Fall()
 {
+
 	SceneIngame* Scene = SceneIngame::getInstance();
+
+	if (0 == c && Scene->cc == 1 ) {
+		printf("------------------------------\n");
+	}
+	if (Scene->cc == 1) {
+
+		std::string col[4] = { "Ô","—Î","Â", "‰©" };
+		printf("%s\n", col[ColorNumber].c_str());
+		c++;
+		c %= 2;
+	}
+	
 	if (_is_freefall) setSequence(&Puyo::FreeFall);
 	//if (_state == STATE_FREEFALL) setSequence(&Puyo::FreeFall);
 	unsigned char KeyFlag = Scene->KeyFlag;
@@ -64,8 +84,6 @@ void Puyo::Fall()
 	//if (Scene->Keyflag_left)
 	if (isLeft)
 	{
-		
-
 		if (!Search_There_is(pos._x - 1, pos._y))
 		{
 			if (pos._x > 1)
@@ -75,7 +93,7 @@ void Puyo::Fall()
 				map(pos._x, pos._y,ColorNumber);
 			}
 		}
-		else
+		/*else
 		{
 			if (Search_is_Falling(pos._x - 1, pos._y))
 			{
@@ -86,7 +104,7 @@ void Puyo::Fall()
 					map(pos._x, pos._y,ColorNumber);
 				}
 			}
-		}
+		}*/
 	}
 	if (isRight)
 		//if (Scene->Keyflag_right)
@@ -100,7 +118,7 @@ void Puyo::Fall()
 				map(pos._x, pos._y,ColorNumber);
 			}
 		}
-		else
+		/*else
 		{
 			if (Search_is_Falling(pos._x + 1, pos._y))
 			{
@@ -111,7 +129,7 @@ void Puyo::Fall()
 					map(pos._x, pos._y,ColorNumber);
 				}
 			}
-		}
+		}*/
 	}
 
 	//if (Scene->Keyflag_turnCounterClockwise)	

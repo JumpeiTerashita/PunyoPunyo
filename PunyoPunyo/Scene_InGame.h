@@ -22,6 +22,8 @@ public:
 
 	static SceneIngame* getInstance();
 
+	int cc ;
+
 	int PuyoColorsNum;
 	
 	Puyo* map[15][8];
@@ -41,11 +43,11 @@ public:
 	
 	int HighScore;
 
-	unsigned char KeyFlag;
 	
+	unsigned char KeyFlag;
 
 private:
-
+	
 	int VanishCounter;
 	int AllVanishedNum;
 	int ChainCounter;

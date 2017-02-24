@@ -37,17 +37,6 @@ GameManager* GameManager::getInstance() {
 	return GameManager::instance;
 }
 
-std::list< GameObject* > GameManager::getObjects() {
-
-	std::list< GameObject* > out;
-
-	for (auto obj : objects) {
-		out.push_back(obj);
-	}
-
-	return out;
-}
-
 void GameManager::Scene_Title()
 {
 	glPushMatrix();
@@ -75,11 +64,17 @@ void GameManager::Scene_Title()
 
 void GameManager::Scene_Ingame()
 {
+	
+
 	SceneIngame::getInstance()->update();
+	objects.sort(sortPosYPriority);
+	unsigned char Keys = SceneIngame::getInstance()->KeyFlag;
+	int isLeft = Keys & KeyFlag_LEFT;
+	int isRight = Keys & KeyFlag_RIGHT;
+	if (isLeft) objects.sort(sortPosXPriority_Ascending);
+	else if (isRight) objects.sort(sortPosXPriority_Descending);
 
 	std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
-
-	objects.sort(sortLogicPriority);
 	
 	while (it != objects.end()) {
 		(*it)->ObjUpdate();
@@ -87,6 +82,7 @@ void GameManager::Scene_Ingame()
 		{
 			delete (*it);
 			it = objects.erase(it);
+			//system("cls");
 			continue;
 		}
 		it++;
@@ -124,7 +120,7 @@ void GameManager::display()
 
 		SceneIngame::getInstance()->display();
 
-		objects.sort(sortRenderPriority);
+		//objects.sort(sortRenderPriority);
 
 		std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
 
