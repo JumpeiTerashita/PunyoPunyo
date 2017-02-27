@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include "../Liblary/Sequence.h"
 #include "../Engine/GameObject.h"
 
@@ -18,6 +16,8 @@ enum STATUS
 {
 	IS_CHECKED,
 	IS_ROTATE,
+	IS_FALLING,
+	IS_FREEFALL,
 	WILL_DELETE
 };
 
@@ -30,14 +30,8 @@ public:
 	Puyo(int _x, int _y, COLORPATTERN _setColor);
 	~Puyo() {};
 	COLORPATTERN ColorNumber;
-	unsigned char Status;
+	unsigned char Status; //Ç’ÇÊèÛë‘ÉtÉâÉOÅ@(enum STATUS)
 	
-	bool _is_checked;
-	bool _is_rotate;
-	bool _is_falling;
-	bool _is_freefall;
-	bool _will_delete;
-
 	void Fall();
 	void FreeFall();
 	
@@ -57,8 +51,7 @@ private:
 	void TurnClockwise();
 	bool UnderCollision();
 
-
 };
 
-
+extern unsigned long genrand_int32(void);
 

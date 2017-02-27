@@ -1,28 +1,15 @@
 #include <list>
 #include <stdio.h>
-#include "../glut.h"
 #include "GameManager.h"
+#include "../glut.h"
 #include "../Engine/InputManager.h"
 #include "Puyo.h"
 #include "Scene_InGame.h"
+#include "../Liblary/BitController.h"
+#include "../Engine/DrawString.h"
 
 GameManager* GameManager::instance = nullptr;
 SceneIngame* SceneIngame::instance = nullptr;
-
-
-void DrawString_Stroke(const char* str)
-{
-	while (*str != '\0')
-	{
-
-		glutStrokeCharacter(
-			GLUT_STROKE_ROMAN,  // void *font
-			*str++);               // int character
-	}
-}
-
-extern void DrawString(const char* str);
-
 
 GameManager::GameManager() {
 	HighScore = 877;
@@ -64,15 +51,11 @@ void GameManager::Scene_Title()
 
 void GameManager::Scene_Ingame()
 {
-	
-
 	SceneIngame::getInstance()->update();
 	objects.sort(sortPosYPriority);
 	unsigned char Keys = SceneIngame::getInstance()->KeyFlag;
-	int isLeft = Keys & KeyFlag_LEFT;
-	int isRight = Keys & KeyFlag_RIGHT;
-	if (isLeft) objects.sort(sortPosXPriority_Ascending);
-	else if (isRight) objects.sort(sortPosXPriority_Descending);
+	if (BitChecker(Keys,KeyFlag_LEFT)) objects.sort(sortPosXPriority_Ascending);
+	else if (BitChecker(Keys, KeyFlag_RIGHT)) objects.sort(sortPosXPriority_Descending);
 
 	std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
 	
@@ -133,24 +116,6 @@ void GameManager::display()
 	}
 	
 }
-
-//void GameManager::SceneChanger() {
-//	if (_Key=='z') 
-//	{
-//		gameState++;
-//		if (gameState >= SCENE_MAX) gameState = SCENE_TITLE;
-//		
-//	}
-//}
-//
-//void GameManager::SceneFactory() {
-//	//if (_SpecialKey == GLUT_KEY_RIGHT) //ƒgƒŠƒK[—á
-//	//{
-//	//	gameState++;
-//	//	if (gameState >= SCENE_MAX) gameState = SCENE_TITLE;
-//	//}
-//}
-
 
 
 

@@ -30,11 +30,6 @@ public:
 		return objects;
 	}
 
-
-	inline int GetObjectNum() 
-	{
-		return objects.size();
-	}
 	inline std::list< GameObject* >::iterator getObjectsIterator() 
 	{
 		std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
@@ -59,8 +54,6 @@ private:
 	{
 		return objA->getPosYPriority() < objB->getPosYPriority(); //è¨Ç≥Ç¢èáÉ\Å[Ég
 	}
-
-	
 
 	static bool sortRenderPriority(const GameObject* objA, const GameObject* objB) 
 	{

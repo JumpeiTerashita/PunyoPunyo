@@ -110,6 +110,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\Program\Engine\DrawString.h" />
     <ClInclude Include="..\Program\Engine\GameObject.h" />
     <ClInclude Include="..\Program\Engine\InputManager.h" />
     <ClInclude Include="..\Program\Game\BitCalc.h" />
@@ -117,16 +118,20 @@
     <ClInclude Include="..\Program\Game\Puyo.h" />
     <ClInclude Include="..\Program\Game\Scene_InGame.h" />
     <ClInclude Include="..\Program\glut.h" />
+    <ClInclude Include="..\Program\Liblary\BitController.h" />
     <ClInclude Include="..\Program\Liblary\Sequence.h" />
     <ClInclude Include="..\Program\Liblary\Vec2.h" />
+    <ClInclude Include="..\Program\MT.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Program\Engine\InputManager.cpp" />
+    <ClCompile Include="..\Program\Engine\DrawString.cpp" />
     <ClCompile Include="..\Program\Game\BitCalc.cpp" />
     <ClCompile Include="..\Program\Game\GameManager.cpp" />
     <ClCompile Include="..\Program\Game\Puyo.cpp" />
     <ClCompile Include="..\Program\Game\Scene_InGame.cpp" />
     <ClCompile Include="..\Program\Game\Source.cpp" />
+    <ClCompile Include="..\Program\Liblary\BitController.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

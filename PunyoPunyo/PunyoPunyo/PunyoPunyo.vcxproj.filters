@@ -37,6 +37,13 @@
     <ClInclude Include="..\Program\Game\BitCalc.h">
       <Filter>Game</Filter>
     </ClInclude>
+    <ClInclude Include="..\Program\Liblary\BitController.h">
+      <Filter>Liblary</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Program\Engine\DrawString.h">
+      <Filter>Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Program\MT.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Program\Engine\InputManager.cpp">
@@ -56,6 +63,12 @@
     </ClCompile>
     <ClCompile Include="..\Program\Game\BitCalc.cpp">
       <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Program\Liblary\BitController.cpp">
+      <Filter>Liblary</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Program\Engine\DrawString.cpp">
+      <Filter>Engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

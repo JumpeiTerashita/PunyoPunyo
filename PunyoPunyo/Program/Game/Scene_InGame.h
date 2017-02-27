@@ -12,8 +12,6 @@ enum KEYFLAGS
 	KEY_TURN_CLOCKWISE
 };
 
-
-
 class SceneIngame : public Sequence<SceneIngame>
 {
 public:
@@ -22,7 +20,7 @@ public:
 
 	static SceneIngame* getInstance();
 
-	int cc ;
+	int cc; //デバッグ用　ぷよ処理通過カウンタ
 
 	unsigned int DeletePuyoStatus; //(赤,緑,青,黄色)*8ビット
 	
@@ -39,16 +37,12 @@ public:
 	void Playing();
 	void KeyJudge();
 
-
-	
 	int HighScore;
 
 	
 	unsigned char KeyFlag;
 
 private:
-	
-	int VanishCounter;
 	int AllVanishedNum;
 	int ChainCounter;
 	int PuyoCounter;
@@ -73,4 +67,5 @@ private:
 };
 
 extern unsigned char _Key;
-extern unsigned const char KeyFlag_LEFT,KeyFlag_RIGHT ,KeyFlag_Turn_CounterClockwise,KeyFlag_Turn_Clockwise;
+extern const unsigned char KeyFlag_LEFT,KeyFlag_RIGHT ,KeyFlag_Turn_CounterClockwise,KeyFlag_Turn_Clockwise;
+extern const unsigned char Is_checked ,Is_rotate,Is_falling,Is_Freefall,Will_Delete;
