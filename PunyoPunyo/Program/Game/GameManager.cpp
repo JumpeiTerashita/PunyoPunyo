@@ -51,11 +51,12 @@ void GameManager::Scene_Title()
 
 void GameManager::Scene_Ingame()
 {
-	SceneIngame::getInstance()->update();
 	objects.sort(sortPosYPriority);
-	unsigned char Keys = SceneIngame::getInstance()->KeyFlag;
-	if (BitChecker(Keys,KeyFlag_LEFT)) objects.sort(sortPosXPriority_Ascending);
-	else if (BitChecker(Keys, KeyFlag_RIGHT)) objects.sort(sortPosXPriority_Descending);
+	SceneIngame::getInstance()->update();
+
+	SceneIngame* Scene = SceneIngame::getInstance();
+	if (BitChecker(Scene->KeyFlag,KeyFlag_LEFT) && (Scene->ArrangeRelation == ARRANGERELATION_LEFT || Scene->ArrangeRelation == ARRANGERELATION_RIGHT)) objects.sort(sortPosXPriority_Ascending);
+	if (BitChecker(Scene->KeyFlag, KeyFlag_RIGHT) && (Scene->ArrangeRelation == ARRANGERELATION_LEFT || Scene->ArrangeRelation == ARRANGERELATION_RIGHT)) objects.sort(sortPosXPriority_Descending);
 
 	std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
 	
@@ -70,7 +71,7 @@ void GameManager::Scene_Ingame()
 		}
 		it++;
 	}
-
+	printf("ListNum = %d \n",objects.size());
 	KeyEventReset();
 }
 

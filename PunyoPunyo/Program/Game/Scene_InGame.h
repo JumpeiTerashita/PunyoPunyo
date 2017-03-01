@@ -4,6 +4,15 @@
 #include "Puyo.h"
 #include "../Engine/GameObject.h"
 
+enum TURNPATTERN
+{
+	ARRANGERELATION_VERTICAL,
+	ARRANGERELATION_RIGHT,
+	ARRANGERELATION_COUNTERVERTICAL,
+	ARRANGERELATION_LEFT,
+	ARRANGERELATION_REFALL
+};
+
 enum KEYFLAGS
 {
 	KEY_LEFT,
@@ -28,7 +37,6 @@ public:
 	int ScoreCounter;
 	int FallLimit;
 	bool GameOver;
-	bool _is_vertical;
 
 	void PuyoCreate();
 	void CreatedMap();
@@ -41,6 +49,8 @@ public:
 
 	
 	unsigned char KeyFlag;
+
+	TURNPATTERN ArrangeRelation;
 
 private:
 	int AllVanishedNum;

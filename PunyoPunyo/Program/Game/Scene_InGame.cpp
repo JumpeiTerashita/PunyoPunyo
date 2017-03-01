@@ -43,13 +43,12 @@ SceneIngame::SceneIngame()
 	CreatedMap();
 	PuyoCreate();
 	FallLimit = 30;
-
+	ArrangeRelation = ARRANGERELATION_VERTICAL;
 	PuyoCounter = 0;
 	ScoreCounter = 0;
 	ChainCounter = 0;
 	AllVanishedNum = 0;
 	HighScore = GameManager::getInstance()->HighScore;
-	_is_vertical = true;
 	GameOver = false;
 	setSequence(&SceneIngame::Playing);
 }
@@ -69,23 +68,29 @@ void SceneIngame::PuyoCreate()
 {
 	First = new Puyo(3, 12, 4);
 	Second = new Puyo(3, 13, 4);
-	BitAddition(&Second->Status, Is_rotate);
-	//Second->_is_rotate = true;
+	BitAddition(&First->Status, Is_rotate);
 }
 
 void SceneIngame::CreatedMap()
 {
+	ArrangeRelation = ARRANGERELATION_VERTICAL;
 	if (map[12][3] != nullptr)
 	{
 		GameOver = true;
 		return;
 	}
+	for (int i = 1; i < 7; i++)
+	{
+		if (map[13][i] != nullptr)
+		{
+			GameOver = true;
+			return;
+		}
+	}
 	GameManager::getInstance()->addObject(First);
 	GameManager::getInstance()->addObject(Second);
 	map[First->pos._y][First->pos._x] = First;
 	map[Second->pos._y][Second->pos._x] = Second;
-	_is_vertical = true;
-
 	return;
 }
 
@@ -96,11 +101,9 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	//âE
 	if (_x + 1 < 7 && map[_y][_x + 1] != nullptr)
 	{
-		//if (map[_y][_x + 1]->_is_checked == false)
 		if (!BitChecker(map[_y][_x + 1]->Status, Is_checked))
 		{
 			BitAddition(&map[_y][_x + 1]->Status, Is_checked);
-			//map[_y][_x + 1]->_is_checked = true;
 			if (map[_y][_x + 1]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
@@ -112,11 +115,9 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	//è„
 	if (_y + 1 < 15 && map[_y + 1][_x] != nullptr)
 	{
-		//if (map[_y + 1][_x]->_is_checked == false)
 		if (!BitChecker(map[_y + 1][_x]->Status, Is_checked))
 		{
 			BitAddition(&map[_y + 1][_x]->Status, Is_checked);
-			//map[_y + 1][_x]->_is_checked = true;
 			if (map[_y + 1][_x]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
@@ -128,11 +129,9 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	//ç∂
 	if (_x - 1 > 0 && map[_y][_x - 1] != nullptr)
 	{
-		//if (map[_y][_x - 1]->_is_checked == false)
 		if (!BitChecker(map[_y][_x - 1]->Status, Is_checked))
 		{
 			BitAddition(&map[_y][_x - 1]->Status, Is_checked);
-			//map[_y][_x - 1]->_is_checked = true;
 			if (map[_y][_x - 1]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
@@ -144,11 +143,9 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	//â∫
 	if (_y > 0 && map[_y - 1][_x] != nullptr)
 	{
-		//if (map[_y - 1][_x]->_is_checked == false)
 		if (!BitChecker(map[_y - 1][_x]->Status, Is_checked))
 		{
 			BitAddition(&map[_y - 1][_x]->Status, Is_checked);
-			//map[_y - 1][_x]->_is_checked = true;
 			if (map[_y - 1][_x]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
@@ -161,6 +158,7 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 
 void SceneIngame::DeleteStart()
 {
+	ArrangeRelation = ARRANGERELATION_REFALL;
 	for (int i = 1; i < 15; i++)
 	{
 		for (int j = 1; j < 7; j++)
@@ -172,7 +170,7 @@ void SceneIngame::DeleteStart()
 		}
 	}
 	VanishPuyo();
-	
+
 	if (!DeletePuyoStatus) setSequence(&SceneIngame::FinishedVanish);
 	else
 	{
@@ -192,11 +190,9 @@ void SceneIngame::DeleteMarkSet()
 			{
 				if (map[i][j] != nullptr)
 				{
-					//if (map[i][j]->_is_checked == true && map[i][j]->ColorNumber == SearchColor)
-					if (BitChecker(map[i][j]->Status,Is_checked)&&map[i][j]->ColorNumber==SearchColor)
+					if (BitChecker(map[i][j]->Status, Is_checked) && map[i][j]->ColorNumber == SearchColor)
 					{
 						BitAddition(&map[i][j]->Status, Will_Delete);
-						//map[i][j]->_will_delete = true;
 					}
 				}
 			}
@@ -209,7 +205,6 @@ void SceneIngame::DeleteMarkSet()
 		{
 			if (map[i][j] == nullptr) continue;
 			BitTakeaway(&map[i][j]->Status, Is_checked);
-			//map[i][j]->_is_checked = false;
 		}
 	}
 }
@@ -225,7 +220,6 @@ void SceneIngame::VanishPuyo()
 		{
 			if (map[i][j] != nullptr)
 			{
-				//if (map[i][j]->_will_delete == true)
 				if (BitChecker(map[i][j]->Status, Will_Delete))
 				{
 					COLORPATTERN DelColor = map[i][j]->ColorNumber;
@@ -238,7 +232,7 @@ void SceneIngame::VanishPuyo()
 					COLORPATTERN RefallColor = map[i][j]->ColorNumber;
 					map[i][j] = nullptr;
 					Puyo* Refall = new Puyo(j, i, RefallColor);
-					BitAddition(&Refall->Status,Is_falling|Is_Freefall);
+					BitAddition(&Refall->Status, Is_falling | Is_Freefall);
 					GameManager::getInstance()->addObject(Refall);
 					Refall->setSequence(&Puyo::FreeFall);
 					map[i][j] = Refall;
@@ -273,7 +267,7 @@ void SceneIngame::KeyJudge()
 
 		cc = 1;
 
-		if (_is_vertical)
+		if (ArrangeRelation == ARRANGERELATION_VERTICAL || ArrangeRelation == ARRANGERELATION_COUNTERVERTICAL)
 		{
 			if (Game->MoveSearch(1) == true)
 			{
@@ -291,7 +285,7 @@ void SceneIngame::KeyJudge()
 	{
 		cc = 1;
 
-		if (_is_vertical)
+		if (ArrangeRelation == ARRANGERELATION_VERTICAL || ArrangeRelation == ARRANGERELATION_COUNTERVERTICAL)
 		{
 			if (Game->MoveSearch(-1) == true)
 			{
@@ -352,7 +346,10 @@ void SceneIngame::update()
 	if (GameManager::getInstance()->getObject().size() == 1)
 	{
 		Puyo* puyoit = dynamic_cast<Puyo*>(*GameManager::getInstance()->getObjectsIterator());
-		BitAddition(&puyoit->Status, Is_Freefall);
+		if (puyoit->getSequence() == &Puyo::Fall)
+		{
+			puyoit->setSequence(&Puyo::FreeFall);
+		}
 	}
 	runSequence();
 }
@@ -380,7 +377,7 @@ void SceneIngame::DelScoreCalc()
 		if (ColorResultStatus[i])
 		{
 			VanishedNum += ColorResultStatus[i];
-			AllVanishedNum += ColorResultStatus[i]; 
+			AllVanishedNum += ColorResultStatus[i];
 			VanishColorsNum++;
 		}
 		if (ColorResultStatus[i] <= 4) continue;
@@ -554,7 +551,6 @@ void SceneIngame::UIDisp()
 			glColor4f(1, 0, 0, 1);
 			glRasterPos2f(0.4f, -0.7f);
 			DrawString("GAME OVER");
-
 		}
 		glPopMatrix();
 
@@ -567,6 +563,20 @@ void SceneIngame::UIDisp()
 		glPopMatrix();
 	}
 
+	if (ArrangeRelation == ARRANGERELATION_REFALL && ChainCounter > 0)
+	{
+		char Chain[2];
+		sprintf(Chain, "%d", ChainCounter);
+		glPushMatrix();
+		{
+			glColor4f(1, 0, 0, 1);
+			glRasterPos2f(0.4f, -0.7f);
+			DrawString(Chain);
+			glRasterPos2f(0.5f, -0.7f);
+			DrawString("CHAIN !");
+		}
+		glPopMatrix();
+	}
 }
 
 void SceneIngame::display()

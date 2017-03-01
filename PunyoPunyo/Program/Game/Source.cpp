@@ -1,4 +1,4 @@
-#pragma comment(linker,"/SUBSYSTEM:\"WINDOWS\" /ENTRY:\"mainCRTStartup\"") //コンソールウィンドウ非表示
+//#pragma comment(linker,"/SUBSYSTEM:\"WINDOWS\" /ENTRY:\"mainCRTStartup\"") //コンソールウィンドウ非表示
 
 #include "../Engine/InputManager.h"
 #include "GameManager.h"

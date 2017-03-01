@@ -29,7 +29,7 @@ Puyo::Puyo(int _x, int _y, COLORPATTERN _setColor)
 {
 	setLifeTime(1);
 	Status = Status;
-	BitTakeaway(&Status, Is_checked|Will_Delete);
+	BitTakeaway(&Status, Is_checked | Will_Delete);
 	pos.set(_x, _y);
 	ColorNumber = _setColor;
 	ColorSetup(_setColor);
@@ -61,16 +61,27 @@ void Puyo::Fall()
 {
 	SceneIngame* Scene = SceneIngame::getInstance();
 
-	if (0 == c && Scene->cc == 1) {
-		printf("------------------------------\n");
+	//if (0 == c && Scene->cc == 1) {
+	//	printf("------------------------------\n");
+	//}
+	//if (Scene->cc == 1) {
+	//	printf("x = %d y = %d\n", pos._x, pos._y);
+	//	/*std::string col[4] = { "ê‘","óŒ","ê¬", "â©" };
+	//	printf("%s\n", col[ColorNumber].c_str());*/
+	//	c++;
+	//	c %= 2;
+	//}
+	if (getFrame() >= Scene->FallLimit)
+	{
+		if (!UnderCollision())
+		{
+			delMap(pos._x, pos._y);
+			pos._y--;
+			setFrame(0);
+			map(pos._x, pos._y, ColorNumber);
+		}
 	}
-	if (Scene->cc == 1) {
-		printf("x = %d y = %d\n", pos._x, pos._y);
-		/*std::string col[4] = { "ê‘","óŒ","ê¬", "â©" };
-		printf("%s\n", col[ColorNumber].c_str());*/
-		c++;
-		c %= 2;
-	}
+
 	if (BitChecker(Status, Is_Freefall)) setSequence(&Puyo::FreeFall);
 	if (BitChecker(Scene->KeyFlag, KeyFlag_LEFT))
 	{
@@ -102,17 +113,6 @@ void Puyo::Fall()
 
 	if (BitChecker(Scene->KeyFlag, KeyFlag_Turn_CounterClockwise)) TurnCounterClockwise();
 	if (BitChecker(Scene->KeyFlag, KeyFlag_Turn_Clockwise)) TurnClockwise();
-
-	if (getFrame() >= Scene->FallLimit)
-	{
-		if (!UnderCollision())
-		{
-			delMap(pos._x, pos._y);
-			pos._y--;
-			setFrame(0);
-			map(pos._x, pos._y, ColorNumber);
-		}
-	}
 }
 
 
@@ -121,56 +121,47 @@ void Puyo::TurnCounterClockwise()
 {
 
 	SceneIngame* Scene = SceneIngame::getInstance();
-	
+
 	if (BitChecker(Status, Is_rotate))
 	{
-		if (Search_There_is(pos._x, pos._y + 1))
+		switch (Scene->ArrangeRelation)
 		{
+		case ARRANGERELATION_VERTICAL: //èc->âE
 			if (!Search_There_is(pos._x + 1, pos._y + 1) && pos._x < 6)
 			{
 				delMap(pos._x, pos._y);
 				pos._x++;
 				pos._y++;
-				map(pos._x, pos._y, ColorNumber);
-				Scene->_is_vertical = false;
-				return;
+				Scene->ArrangeRelation = ARRANGERELATION_RIGHT;
 			}
-		}
-		else if (Search_There_is(pos._x - 1, pos._y))
-		{
-			if (!Search_There_is(pos._x - 1, pos._y + 1))
+			break;
+		case ARRANGERELATION_RIGHT: //âE->ãtèc
+			if (!Search_There_is(pos._x - 1, pos._y + 1) && pos._y < 14)
 			{
 				delMap(pos._x, pos._y);
 				pos._x--;
 				pos._y++;
-				map(pos._x, pos._y, ColorNumber);
-				Scene->_is_vertical = true;
-				return;
+				Scene->ArrangeRelation = ARRANGERELATION_COUNTERVERTICAL;
 			}
-		}
-		else if (Search_There_is(pos._x, pos._y - 1))
-		{
+			break;
+		case ARRANGERELATION_COUNTERVERTICAL: //ãtèc->ç∂
 			if (!Search_There_is(pos._x - 1, pos._y - 1) && pos._x > 1)
 			{
 				delMap(pos._x, pos._y);
 				pos._x--;
 				pos._y--;
-				map(pos._x, pos._y, ColorNumber);
-				Scene->_is_vertical = false;
-				return;
+				Scene->ArrangeRelation = ARRANGERELATION_LEFT;
 			}
-		}
-		else if (Search_There_is(pos._x + 1, pos._y))
-		{
-			if (!Search_There_is(pos._x + 1, pos._y - 1))
+			break;
+		case ARRANGERELATION_LEFT: //ç∂->èc
+			if (!Search_There_is(pos._x + 1, pos._y - 1) && pos._y > 1)
 			{
 				delMap(pos._x, pos._y);
 				pos._x++;
 				pos._y--;
-				map(pos._x, pos._y, ColorNumber);
-				Scene->_is_vertical = true;
-				return;
+				Scene->ArrangeRelation = ARRANGERELATION_VERTICAL;
 			}
+			break;
 		}
 		Scene->KeyFlag = 0;
 	}
@@ -181,54 +172,46 @@ void Puyo::TurnClockwise()
 	SceneIngame* Scene = SceneIngame::getInstance();
 	if (BitChecker(Status, Is_rotate))
 	{
-		if (Search_There_is(pos._x, pos._y + 1))
+		switch (Scene->ArrangeRelation)
 		{
+		case ARRANGERELATION_VERTICAL: //èc->ç∂
 			if (!Search_There_is(pos._x - 1, pos._y + 1) && pos._x > 1)
 			{
 				delMap(pos._x, pos._y);
 				pos._x--;
 				pos._y++;
-				map(pos._x, pos._y, ColorNumber);
-				Scene->_is_vertical = false;
-				return;
+				Scene->ArrangeRelation = ARRANGERELATION_LEFT;
 			}
-		}
-		else if (Search_There_is(pos._x + 1, pos._y))
-		{
-			if (!Search_There_is(pos._x + 1, pos._y + 1))
+			break;
+		case ARRANGERELATION_LEFT: //ç∂->ãtèc
+			if (!Search_There_is(pos._x + 1, pos._y + 1) && pos._y < 14)
 			{
 				delMap(pos._x, pos._y);
 				pos._x++;
 				pos._y++;
-				map(pos._x, pos._y, ColorNumber);
-				Scene->_is_vertical = true;
-				return;
+				Scene->ArrangeRelation = ARRANGERELATION_COUNTERVERTICAL;
 			}
-		}
-		else if (Search_There_is(pos._x, pos._y - 1))
-		{
+			break;
+		case ARRANGERELATION_COUNTERVERTICAL: //ãtèc->âE
 			if (!Search_There_is(pos._x + 1, pos._y - 1) && pos._x < 6)
 			{
 				delMap(pos._x, pos._y);
 				pos._x++;
 				pos._y--;
-				map(pos._x, pos._y, ColorNumber);
-				Scene->_is_vertical = false;
-				return;
+				Scene->ArrangeRelation = ARRANGERELATION_RIGHT;
 			}
-		}
-		else if (Search_There_is(pos._x - 1, pos._y))
-		{
-			if (!Search_There_is(pos._x - 1, pos._y - 1))
+			break;
+		case ARRANGERELATION_RIGHT: //âE->èc
+			if (!Search_There_is(pos._x - 1, pos._y - 1) && pos._y > 1)
 			{
 				delMap(pos._x, pos._y);
 				pos._x--;
 				pos._y--;
-				map(pos._x, pos._y, ColorNumber);
-				Scene->_is_vertical = true;
-				return;
+				Scene->ArrangeRelation = ARRANGERELATION_VERTICAL;
 			}
+			break;
 		}
+
 		Scene->KeyFlag = 0;
 	}
 }
@@ -261,7 +244,7 @@ bool Puyo::UnderCollision()
 		return true;
 	}
 
-	if (Search_There_is(pos._x, pos._y - 1) && !Search_is_Falling(pos._x, pos._y - 1))
+	if (Search_There_is(pos._x, pos._y - 1))
 	{
 		BitTakeaway(&Status, Is_falling | Is_Freefall);
 		map(pos._x, pos._y, ColorNumber);
@@ -270,7 +253,7 @@ bool Puyo::UnderCollision()
 	}
 	else if (Search_is_Falling(pos._x, pos._y - 1))
 	{
-		if (pos._y == 2 || Search_There_is(pos._x, pos._y - 2))
+		if (pos._y == 3 || Search_There_is(pos._x, pos._y - 2))
 		{
 			BitTakeaway(&Status, Is_falling | Is_Freefall);
 			map(pos._x, pos._y, ColorNumber);
@@ -283,9 +266,8 @@ bool Puyo::UnderCollision()
 
 bool Puyo::Search_is_Falling(int _x, int _y)
 {
-	Puyo* Look = SceneIngame::getInstance()->map[_y][_x];
-	if (Look == nullptr) return false;
-	if (BitChecker(Look->Status,Is_falling)) return true;
+	if (SceneIngame::getInstance()->map[_y][_x] == nullptr) return false;
+	if (BitChecker(SceneIngame::getInstance()->map[_y][_x]->Status, Is_falling)) return true;
 	return false;
 }
 
