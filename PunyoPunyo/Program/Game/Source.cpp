@@ -1,4 +1,4 @@
-//#pragma comment(linker,"/SUBSYSTEM:\"WINDOWS\" /ENTRY:\"mainCRTStartup\"") //コンソールウィンドウ非表示
+#pragma comment(linker,"/SUBSYSTEM:\"WINDOWS\" /ENTRY:\"mainCRTStartup\"") //コンソールウィンドウ非表示
 
 #include "../Engine/InputManager.h"
 #include "GameManager.h"
@@ -22,8 +22,6 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(display);
 
 	glutTimerFunc(0, update, 0);
-
-	//glutJoystickFunc(JoyStick, 0);
 
 	glutKeyboardFunc(Key);
 	glutKeyboardUpFunc(UpKey);

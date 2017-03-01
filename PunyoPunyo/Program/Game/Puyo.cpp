@@ -132,6 +132,7 @@ void Puyo::TurnCounterClockwise()
 				delMap(pos._x, pos._y);
 				pos._x++;
 				pos._y++;
+				map(pos._x, pos._y, ColorNumber);
 				Scene->ArrangeRelation = ARRANGERELATION_RIGHT;
 			}
 			break;
@@ -150,6 +151,7 @@ void Puyo::TurnCounterClockwise()
 				delMap(pos._x, pos._y);
 				pos._x--;
 				pos._y--;
+				map(pos._x, pos._y, ColorNumber);
 				Scene->ArrangeRelation = ARRANGERELATION_LEFT;
 			}
 			break;
@@ -180,6 +182,7 @@ void Puyo::TurnClockwise()
 				delMap(pos._x, pos._y);
 				pos._x--;
 				pos._y++;
+				map(pos._x, pos._y, ColorNumber);
 				Scene->ArrangeRelation = ARRANGERELATION_LEFT;
 			}
 			break;
@@ -198,6 +201,7 @@ void Puyo::TurnClockwise()
 				delMap(pos._x, pos._y);
 				pos._x++;
 				pos._y--;
+				map(pos._x, pos._y, ColorNumber);
 				Scene->ArrangeRelation = ARRANGERELATION_RIGHT;
 			}
 			break;

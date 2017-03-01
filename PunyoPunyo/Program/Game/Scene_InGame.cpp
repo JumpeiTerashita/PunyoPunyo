@@ -19,18 +19,7 @@ SceneIngame::SceneIngame()
 
 	First = nullptr;
 	Second = nullptr;
-	pFile = fopen(
-		"Brick.data", // const char * _Filename
-		"rb");      // const char * _Mode
-
-	fread(
-		pixels,        // void * _DstBuf
-		300 * 300 * 3, // size_t _ElementSize
-		1,          // size_t _Count
-		pFile);     // FILE * _File
-
-
-	fclose(pFile);// FILE * _File
+	
 
 	for (int i = 0; i < 15; i++)
 	{
@@ -415,7 +404,7 @@ void SceneIngame::UIDisp()
 		0,                  // ボーダー処理 (GLint border)
 		GL_RGB,             // ピクセルフォーマット (GLenum format)
 		GL_UNSIGNED_BYTE,   // 各ピクセルのデータ型 (GLenum type)
-		pixels);            // const GLvoid *pixels
+		GameManager::getInstance()->pixels);            // const GLvoid *pixels
 
 							//テクスチャフィルター設定 (テクスチャ描画時必須)
 							//_________________________________________________

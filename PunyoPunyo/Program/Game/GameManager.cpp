@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <list>
 #include <stdio.h>
 #include "GameManager.h"
@@ -14,7 +15,25 @@ SceneIngame* SceneIngame::instance = nullptr;
 GameManager::GameManager() {
 	HighScore = 877;
 	KeyEventReset();
-	setSequence(&GameManager::Scene_Title);
+	
+	pFile = fopen(
+		"Brick.data", // const char * _Filename
+		"rb");      // const char * _Mode
+
+	if (!pFile) setSequence(&GameManager::Scene_ReadError);
+	else
+	{
+		fread(
+			pixels,        // void * _DstBuf
+			300 * 300 * 3, // size_t _ElementSize
+			1,          // size_t _Count
+			pFile);     // FILE * _File
+
+
+		fclose(pFile);// FILE * _File
+		setSequence(&GameManager::Scene_Title);
+	}
+		
 };
 
 GameManager* GameManager::getInstance() {
@@ -22,6 +41,34 @@ GameManager* GameManager::getInstance() {
 		GameManager::instance = new GameManager();
 	}
 	return GameManager::instance;
+}
+
+void GameManager::Scene_ReadError()
+{
+	glPushMatrix();
+	{
+		glColor4f(1, 0, 0, 1);
+		glTranslatef(-0.6f, 0.3f, 0);
+		glScalef(0.001f, 0.001f, 0.001f);
+		DrawString_Stroke("FILE READ ERROR!");
+	}
+	glPopMatrix();
+	glPushMatrix();
+	{
+		glColor4f(1, 1, 1, 1);
+		glRasterPos2f(-0.5, -0.2);
+		DrawString("\"Brick.data\" not find.");
+		glRasterPos2f(-0.5, -0.4);
+		DrawString("Please place \"Brick.data\" in the same folder ");
+		glRasterPos2f(-0.5, -0.5);
+		DrawString("as the \"PunyoPunyo.exe\" file.");
+	}
+	glPopMatrix();
+
+	if (_Key)
+	{
+		exit(1);
+	}
 }
 
 void GameManager::Scene_Title()
@@ -55,8 +102,8 @@ void GameManager::Scene_Ingame()
 	SceneIngame::getInstance()->update();
 
 	SceneIngame* Scene = SceneIngame::getInstance();
-	if (BitChecker(Scene->KeyFlag,KeyFlag_LEFT) && (Scene->ArrangeRelation == ARRANGERELATION_LEFT || Scene->ArrangeRelation == ARRANGERELATION_RIGHT)) objects.sort(sortPosXPriority_Ascending);
-	if (BitChecker(Scene->KeyFlag, KeyFlag_RIGHT) && (Scene->ArrangeRelation == ARRANGERELATION_LEFT || Scene->ArrangeRelation == ARRANGERELATION_RIGHT)) objects.sort(sortPosXPriority_Descending);
+	if (BitChecker(Scene->KeyFlag, KeyFlag_LEFT)) objects.sort(sortPosXPriority_Ascending);
+	if (BitChecker(Scene->KeyFlag, KeyFlag_RIGHT)) objects.sort(sortPosXPriority_Descending);
 
 	std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
 	
@@ -71,7 +118,6 @@ void GameManager::Scene_Ingame()
 		}
 		it++;
 	}
-	printf("ListNum = %d \n",objects.size());
 	KeyEventReset();
 }
 

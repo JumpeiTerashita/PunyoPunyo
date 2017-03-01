@@ -67,8 +67,7 @@ private:
 	Puyo* First;
 	Puyo* Second;
 
-	unsigned char* pixels = (unsigned char*)malloc(300 * 300 * 3);
-	FILE *pFile;
+	
 
 	void UIDisp();
 	void DelScoreCalc();

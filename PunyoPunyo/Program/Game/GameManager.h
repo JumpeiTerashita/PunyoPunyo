@@ -15,6 +15,10 @@ public:
 		objects.push_back(object);
 	}
 
+	unsigned char* pixels = (unsigned char*)malloc(300 * 300 * 3);
+	FILE *pFile;
+
+	void Scene_ReadError();
 	void Scene_Title();
 	void Scene_Ingame();
 
