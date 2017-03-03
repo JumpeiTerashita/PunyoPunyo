@@ -14,8 +14,9 @@ SceneIngame* SceneIngame::instance = nullptr;
 
 GameManager::GameManager() {
 	HighScore = 877;
+	SelectDifficulty = 0;
 	KeyEventReset();
-	
+
 	pFile = fopen(
 		"Brick.data", // const char * _Filename
 		"rb");      // const char * _Mode
@@ -33,7 +34,7 @@ GameManager::GameManager() {
 		fclose(pFile);// FILE * _File
 		setSequence(&GameManager::Scene_Title);
 	}
-		
+
 };
 
 GameManager* GameManager::getInstance() {
@@ -45,26 +46,6 @@ GameManager* GameManager::getInstance() {
 
 void GameManager::Scene_ReadError()
 {
-	glPushMatrix();
-	{
-		glColor4f(1, 0, 0, 1);
-		glTranslatef(-0.6f, 0.3f, 0);
-		glScalef(0.001f, 0.001f, 0.001f);
-		DrawString_Stroke("FILE READ ERROR!");
-	}
-	glPopMatrix();
-	glPushMatrix();
-	{
-		glColor4f(1, 1, 1, 1);
-		glRasterPos2f(-0.5, -0.2);
-		DrawString("\"Brick.data\" not find.");
-		glRasterPos2f(-0.5, -0.4);
-		DrawString("Please place \"Brick.data\" in the same folder ");
-		glRasterPos2f(-0.5, -0.5);
-		DrawString("as the \"PunyoPunyo.exe\" file.");
-	}
-	glPopMatrix();
-
 	if (_Key)
 	{
 		exit(1);
@@ -73,23 +54,28 @@ void GameManager::Scene_ReadError()
 
 void GameManager::Scene_Title()
 {
-	glPushMatrix();
-	{
-		glColor4f(1, 1, 1, 1);
-		glTranslatef(-0.45f, 0.3f, 0);
-		glScalef(0.001f, 0.001f, 0.001f);
-		DrawString_Stroke("Punyo Punyo");
-	}
-	glPopMatrix();
-	glPushMatrix();
-	{
-		glColor4f(1, 1, 1, 1);
-		glRasterPos2f(-0.32, -0.2);
-		DrawString("PUSH  ANY  BUTTON");
-	}
-	glPopMatrix();
-
 	if (_Key)
+	{
+		KeyEventReset();
+		setSequence(&GameManager::Scene_DifficultySelect);
+	}
+}
+
+void GameManager::Scene_DifficultySelect()
+{
+	if (_SpecialKey == GLUT_KEY_UP || _Key == 'w')
+	{
+		if (SelectDifficulty == EASY) SelectDifficulty = DIFFICULTY_NUM - 1;
+		else SelectDifficulty--;
+		KeyEventReset();
+	}
+	else if (_SpecialKey == GLUT_KEY_DOWN || _Key == 's')
+	{
+		if (SelectDifficulty == DIFFICULTY_NUM - 1) SelectDifficulty = EASY;
+		else SelectDifficulty++;
+		KeyEventReset();
+	}
+	else if (_Key)
 	{
 		KeyEventReset();
 		setSequence(&GameManager::Scene_Ingame);
@@ -106,7 +92,7 @@ void GameManager::Scene_Ingame()
 	if (BitChecker(Scene->KeyFlag, KeyFlag_RIGHT)) objects.sort(sortPosXPriority_Descending);
 
 	std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
-	
+
 	while (it != objects.end()) {
 		(*it)->ObjUpdate();
 		if (0 == (*it)->getLifeTime())
@@ -128,7 +114,7 @@ bool GameManager::MoveSearch(int lookX)
 	std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
 
 	while (it != objects.end()) {
-		if (Scene->map[(*it)->pos._y][(*it)->pos._x+lookX] != nullptr) return false;
+		if (Scene->map[(*it)->pos._y][(*it)->pos._x + lookX] != nullptr) return false;
 		it++;
 	}
 
@@ -139,8 +125,146 @@ void GameManager::update() {
 	runSequence();
 }
 
-void GameManager::display() 
+void GameManager::display()
 {
+	if (getSequence() == &GameManager::Scene_ReadError)
+	{
+		glPushMatrix();
+		{
+			glColor4f(1, 0, 0, 1);
+			glTranslatef(-0.6f, 0.3f, 0);
+			glScalef(0.001f, 0.001f, 0.001f);
+			DrawString_Stroke("FILE READ ERROR!");
+		}
+		glPopMatrix();
+		glPushMatrix();
+		{
+			glColor4f(1, 1, 1, 1);
+			glRasterPos2f(-0.5, -0.2);
+			DrawString("\"Brick.data\" not find.");
+			glRasterPos2f(-0.5, -0.4);
+			DrawString("Please place \"Brick.data\" in the same folder ");
+			glRasterPos2f(-0.5, -0.5);
+			DrawString("as the \"PunyoPunyo.exe\" file.");
+		}
+		glPopMatrix();
+	}
+
+	if (getSequence() == &GameManager::Scene_Title)
+	{
+		glClear(GL_COLOR_BUFFER_BIT);//クリア（色情報） 残像出なくなる
+
+		glLoadIdentity();
+
+		glPushMatrix();
+		{
+			glColor4f(1, 0, 0.5, 1);
+			glLineWidth(7);
+			glTranslatef(-0.6f, 0.6f, 0);
+			glScalef(0.001f, 0.001f, 0.001f);
+			DrawString_Stroke("P u n y o");
+		}
+		glPopMatrix();
+
+		glPushMatrix();
+		{
+			glColor4f(1, 0, 0.5, 1);
+			glLineWidth(7);
+			glTranslatef(-0.2f, 0.35f, 0);
+			glScalef(0.001f, 0.001f, 0.001f);
+			DrawString_Stroke("P u n y o");
+		}
+		glPopMatrix();
+
+
+
+		glPushMatrix();
+		{
+			glColor4f(1, 1, 1, 1);
+			glLineWidth(3);
+			glTranslatef(-0.625f, -0.6f, 0);
+			glScalef(0.0005f, 0.0005f, 0.0005f);
+			DrawString_Stroke("P U S H  A N Y  B U T T O N");
+		}
+		glPopMatrix();
+	}
+
+	if (getSequence() == &GameManager::Scene_DifficultySelect)
+	{
+		glClear(GL_COLOR_BUFFER_BIT);//クリア（色情報） 残像出なくなる
+
+		glLoadIdentity();
+
+		glPushMatrix();
+		{
+			glColor4f(1, 0, 0.5, 1);
+			glLineWidth(7);
+			glTranslatef(-0.6f, 0.6f, 0);
+			glScalef(0.001f, 0.001f, 0.001f);
+			DrawString_Stroke("P u n y o");
+		}
+		glPopMatrix();
+
+		glPushMatrix();
+		{
+			glColor4f(1, 0, 0.5, 1);
+			glLineWidth(7);
+			glTranslatef(-0.2f, 0.35f, 0);
+			glScalef(0.001f, 0.001f, 0.001f);
+			DrawString_Stroke("P u n y o");
+		}
+		glPopMatrix();
+
+		glPushMatrix();
+		{
+			glColor4f(1, 1, 1, 1);
+			glLineWidth(3);
+			glTranslatef(-0.7f, 0, 0);
+			glScalef(0.0006f, 0.0006f, 0.001f);
+			DrawString_Stroke("Choose Difficulty");
+		}
+		glPopMatrix();
+
+		for (int i = 0; i < DIFFICULTY_NUM; i++)
+		{
+			glPushMatrix();
+			{
+				if (i == SelectDifficulty) glColor4f(1, 1, 0, 1);
+				else glColor4f(1, 1, 1, 1);
+				glRasterPos2f(0.1, -0.1*i);
+				DrawString(DifficultyDisp[i]);
+			}
+			glPopMatrix();
+			char PuyoCOLORs[2];
+			sprintf(PuyoCOLORs, "%d", i + 3);
+			if (i == SelectDifficulty)
+			{
+				glPushMatrix();
+				{
+					glColor4f(1, 1, 1, 1);
+					glRasterPos2f(-0.7, -0.6);
+					DrawString(DifficultyDisp[i]);
+					glRasterPos2f(-0.2, -0.6);
+					DrawString("Puyos COLOR  = ");
+					glRasterPos2f(0.3, -0.6);
+					DrawString(PuyoCOLORs);
+				}
+				glPopMatrix();
+
+				for (int j = 0; j < SelectDifficulty + 3; j++)
+				{
+					glPushMatrix();
+					{
+						GameManager::glColorSetup(j);
+						glTranslatef(-0.125 + 0.15*j, -0.75, 1);
+						glutSolidSphere(0.075, 180, 5);
+					}
+					glPopMatrix();
+				}
+			}
+		}
+	}
+
 
 	if (getSequence() == &GameManager::Scene_Ingame)
 	{
@@ -159,9 +283,37 @@ void GameManager::display()
 
 			it++;
 		}
-		
+
 	}
-	
+
+}
+
+void GameManager::glColorSetup(int _colorNumber)
+{
+	switch (_colorNumber)
+	{
+	case COLOR_RED:
+		glColor4f(1, 0, 0, 1);
+		break;
+	case COLOR_BLUE:
+		glColor4f(0, 0.3, 1, 1);
+		break;
+	case COLOR_GREEN:
+		glColor4f(0, 1, 0, 1);
+		break;
+	case COLOR_YELLOW:
+		glColor4f(1, 1, 0, 1);
+		break;
+	case COLOR_PURPLE:
+		glColor4f(1, 0, 1, 1);
+		break;
+	case COLOR_LIGHTBLUE:
+		glColor4f(0.7f, 0.9f, 1, 1);
+		break;
+	case COLOR_ORANGE:
+		glColor4f(1, 0.6f, 0, 1);
+		break;
+	}
 }
 
 

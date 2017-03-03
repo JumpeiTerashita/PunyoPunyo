@@ -14,7 +14,7 @@ static const unsigned char KeyFlag_Turn_Clockwise = 1 << KEY_TURN_CLOCKWISE;
 
 SceneIngame::SceneIngame()
 {
-
+	Difficulty = GameManager::getInstance()->SelectDifficulty;
 	cc = 0;
 
 	First = nullptr;
@@ -55,8 +55,30 @@ SceneIngame* SceneIngame::getInstance() {
 
 void SceneIngame::PuyoCreate()
 {
-	First = new Puyo(3, 12, 4);
-	Second = new Puyo(3, 13, 4);
+	switch (Difficulty)
+	{
+	case EASY:
+		First = new Puyo(3, 12, 3);
+		Second = new Puyo(3, 13, 3);
+		break;
+	case NORMAL:
+		First = new Puyo(3, 12, 4);
+		Second = new Puyo(3, 13, 4);
+		break;
+	case HARD:
+		First = new Puyo(3, 12, 5);
+		Second = new Puyo(3, 13, 5);
+		break;
+	case EXTREME:
+		First = new Puyo(3, 12, 6);
+		Second = new Puyo(3, 13, 6);
+		break;
+	case LUNATIC:
+		First = new Puyo(3, 12, 7);
+		Second = new Puyo(3, 13, 7);
+		break;
+	}
+	
 	BitAddition(&First->Status, Is_rotate);
 }
 
@@ -345,6 +367,7 @@ void SceneIngame::update()
 
 void SceneIngame::DelScoreCalc()
 {
+	//TODO スコア計算　まだ4色までしか対応してない
 	const unsigned int VanishedPuyo = DeletePuyoStatus;
 	const int ChainNum = ChainCounter;
 	const int ChainBonusBox[20] = { 0,8,16,32,64,96,128,160,192,224,256,288,320,352,388,416,448,480,512,512 };
@@ -355,7 +378,7 @@ void SceneIngame::DelScoreCalc()
 	int VanishNumBonus = 0;
 	int VanishColorsNum = 0;
 	int VanishColorsBonus = 0;
-	const int VanishColorsBonusBox[5] = { 0,0,3,6,12 };
+	const int VanishColorsBonusBox[7] = { 0,0,3,6,12,2400,48000 };
 
 	if (ChainNum >= 19) ChainBonus = ChainBonusBox[19];
 	else ChainBonus = ChainBonusBox[ChainNum];

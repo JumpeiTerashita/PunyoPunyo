@@ -1,11 +1,3 @@
-﻿  BitController.cpp
-  Source.cpp
-  Scene_InGame.cpp
-  Puyo.cpp
-  GameManager.cpp
-  BitCalc.cpp
-  DrawString.cpp
-  InputManager.cpp
-  コードを生成中...
+﻿  GameManager.cpp
   PunyoPunyo.vcxproj -> C:\Users\vantan\Documents\Atelier\Children\PunyoPunyo\Debug\PunyoPunyo.exe
   PunyoPunyo.vcxproj -> C:\Users\vantan\Documents\Atelier\Children\PunyoPunyo\Debug\PunyoPunyo.pdb (Partial PDB)

@@ -53,6 +53,7 @@ public:
 	TURNPATTERN ArrangeRelation;
 
 private:
+	int Difficulty;
 	int AllVanishedNum;
 	int ChainCounter;
 	int PuyoCounter;

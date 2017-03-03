@@ -326,8 +326,25 @@ void Puyo::ColorSetup(COLORPATTERN _colorNumber)
 		colorStatus[2] = 0;
 		colorStatus[3] = 1;
 		break;
-	default:
+	case COLOR_PURPLE:
+		colorStatus[0] = 1;
+		colorStatus[1] = 0;
+		colorStatus[2] = 1;
+		colorStatus[3] = 1;
+		break;
+	case COLOR_LIGHTBLUE:
+		colorStatus[0] = 0.7f;
+		colorStatus[1] = 0.9f;
+		colorStatus[2] = 1;
+		colorStatus[3] = 1;
+		break;
+	case COLOR_ORANGE:
+		colorStatus[0] = 1;
+		colorStatus[1] = 0.6f;
+		colorStatus[2] = 0;
+		colorStatus[3] = 1;
 		break;
 	}
 	return;
 }
+

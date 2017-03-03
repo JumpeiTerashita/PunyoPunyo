@@ -4,6 +4,16 @@
 #include "Puyo.h"
 #include "../Engine/GameObject.h"
 
+enum DIFFICULTY
+{
+	EASY,
+	NORMAL,
+	HARD,
+	EXTREME,
+	LUNATIC,
+	DIFFICULTY_NUM
+};
+
 class GameManager :public Sequence<GameManager>
 {
 public:
@@ -20,6 +30,7 @@ public:
 
 	void Scene_ReadError();
 	void Scene_Title();
+	void Scene_DifficultySelect();
 	void Scene_Ingame();
 
 	bool MoveSearch(int lookX);
@@ -28,7 +39,10 @@ public:
 	void display();
 
 	int HighScore;
-	
+	int SelectDifficulty;
+
+	void glColorSetup(int _colorNumber);
+
 	inline std::list< GameObject* > getObject()
 	{
 		return objects;
@@ -63,6 +77,11 @@ private:
 	{
 		return objA->getRenderPriority() < objB->getRenderPriority(); //è¨Ç≥Ç¢èáÉ\Å[Ég
 	}
+
+	const char DifficultyDisp[DIFFICULTY_NUM][10] = { "EASY","NORMAL","HARD","EXTREME","LUNATIC" };
+	
+	
+	
 };
 
 

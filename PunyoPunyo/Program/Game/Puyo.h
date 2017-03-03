@@ -9,6 +9,9 @@ enum COLORPATTERN
 	COLOR_GREEN,
 	COLOR_BLUE,
 	COLOR_YELLOW,
+	COLOR_PURPLE,
+	COLOR_LIGHTBLUE,
+	COLOR_ORANGE,
 	COLOR_MAX
 };
 
@@ -40,6 +43,7 @@ public:
 
 	float colorStatus[4];
 	void ColorSetup(COLORPATTERN _colorNumber);
+	
 private:
 	void delMap(int _x, int _y);
 	void map(int _x, int _y, COLORPATTERN _setColor);
