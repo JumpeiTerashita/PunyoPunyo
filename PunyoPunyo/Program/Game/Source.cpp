@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 
 	glutInitWindowSize(640, 640);
 
-	glutCreateWindow("Puyo!");
+	glutCreateWindow("PunyoPunyo");
 
 	glutDisplayFunc(display);
 
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
 
 void display()
 {
-	GameManager::getInstance()->display();
+	GameManager::GetInstance()->display();
 
 	glFlush();
 }
@@ -46,7 +46,7 @@ void update(int value)
 {
 	//glutForceJoystickFunc();
 	
-	GameManager::getInstance()->update();
+	GameManager::GetInstance()->update();
 	
 	glutPostRedisplay();
 

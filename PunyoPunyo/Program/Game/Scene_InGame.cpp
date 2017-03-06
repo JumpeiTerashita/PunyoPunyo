@@ -2,7 +2,6 @@
 #include "Scene_InGame.h"
 #include "../Engine/InputManager.h"
 #include "../glut.h"
-#include "BitCalc.h"
 #include "../Liblary/BitController.h"
 #include "../Engine/DrawString.h"
 #include <string.h>
@@ -14,20 +13,18 @@ static const unsigned char KeyFlag_Turn_Clockwise = 1 << KEY_TURN_CLOCKWISE;
 
 SceneIngame::SceneIngame()
 {
-	Difficulty = GameManager::getInstance()->SelectDifficulty;
-	cc = 0;
-
 	First = nullptr;
 	Second = nullptr;
-	
+
 
 	for (int i = 0; i < 15; i++)
 	{
 		for (int j = 0; j < 8; j++)
 		{
-			map[i][j] = nullptr;
+			Map[i][j] = nullptr;
 		}
 	}
+	DeleteCounterReset();
 	PuyoCreate();
 	CreatedMap();
 	PuyoCreate();
@@ -37,7 +34,7 @@ SceneIngame::SceneIngame()
 	ScoreCounter = 0;
 	ChainCounter = 0;
 	AllVanishedNum = 0;
-	HighScore = GameManager::getInstance()->HighScore;
+	HighScore = GameManager::GetInstance()->HighScore;
 	GameOver = false;
 	setSequence(&SceneIngame::Playing);
 }
@@ -46,76 +43,61 @@ SceneIngame::~SceneIngame()
 {
 }
 
-SceneIngame* SceneIngame::getInstance() {
-	if (nullptr == SceneIngame::instance) {
-		SceneIngame::instance = new SceneIngame();
+SceneIngame* SceneIngame::GetInstance() {
+	if (nullptr == SceneIngame::Instance) {
+		SceneIngame::Instance = new SceneIngame();
 	}
-	return SceneIngame::instance;
+	return SceneIngame::Instance;
 }
 
 void SceneIngame::PuyoCreate()
 {
-	switch (Difficulty)
-	{
-	case EASY:
-		First = new Puyo(3, 12, 3);
-		Second = new Puyo(3, 13, 3);
-		break;
-	case NORMAL:
-		First = new Puyo(3, 12, 4);
-		Second = new Puyo(3, 13, 4);
-		break;
-	case HARD:
-		First = new Puyo(3, 12, 5);
-		Second = new Puyo(3, 13, 5);
-		break;
-	case EXTREME:
-		First = new Puyo(3, 12, 6);
-		Second = new Puyo(3, 13, 6);
-		break;
-	case LUNATIC:
-		First = new Puyo(3, 12, 7);
-		Second = new Puyo(3, 13, 7);
-		break;
-	}
-	
+	First = new Puyo(3, 12, Difficulty + 3);
+	Second = new Puyo(3, 13, Difficulty + 3);
+
 	BitAddition(&First->Status, Is_rotate);
 }
 
 void SceneIngame::CreatedMap()
 {
 	ArrangeRelation = ARRANGERELATION_VERTICAL;
-	if (map[12][3] != nullptr)
+	if (Map[12][3] != nullptr)
 	{
 		GameOver = true;
 		return;
 	}
 	for (int i = 1; i < 7; i++)
 	{
-		if (map[13][i] != nullptr)
+		if (Map[13][i] != nullptr)
 		{
 			GameOver = true;
 			return;
 		}
 	}
-	GameManager::getInstance()->addObject(First);
-	GameManager::getInstance()->addObject(Second);
-	map[First->pos._y][First->pos._x] = First;
-	map[Second->pos._y][Second->pos._x] = Second;
+	GameManager::GetInstance()->addObject(First);
+	GameManager::GetInstance()->addObject(Second);
+	Map[First->pos._y][First->pos._x] = First;
+	Map[Second->pos._y][Second->pos._x] = Second;
 	return;
+}
+
+void SceneIngame::WriteMap(int _x, int _y, COLORPATTERN _SetColor)
+{
+	if (_SetColor == COLOR_NULL) Map[_y][_x] = nullptr;
+	else Map[_y][_x] = new Puyo(_x, _y, _SetColor);
 }
 
 void SceneIngame::CheckPuyo(int _x, int _y)
 {
-	SearchColor = map[_y][_x]->ColorNumber;
+	SearchColor = Map[_y][_x]->ColorNumber;
 
 	//右
-	if (_x + 1 < 7 && map[_y][_x + 1] != nullptr)
+	if (_x + 1 < 7 && Map[_y][_x + 1] != nullptr)
 	{
-		if (!BitChecker(map[_y][_x + 1]->Status, Is_checked))
+		if (!BitChecker(Map[_y][_x + 1]->Status, Is_checked))
 		{
-			BitAddition(&map[_y][_x + 1]->Status, Is_checked);
-			if (map[_y][_x + 1]->ColorNumber == SearchColor)
+			BitAddition(&Map[_y][_x + 1]->Status, Is_checked);
+			if (Map[_y][_x + 1]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
 				CheckPuyo(_x + 1, _y);
@@ -124,12 +106,12 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	}
 
 	//上
-	if (_y + 1 < 15 && map[_y + 1][_x] != nullptr)
+	if (_y + 1 < 15 && Map[_y + 1][_x] != nullptr)
 	{
-		if (!BitChecker(map[_y + 1][_x]->Status, Is_checked))
+		if (!BitChecker(Map[_y + 1][_x]->Status, Is_checked))
 		{
-			BitAddition(&map[_y + 1][_x]->Status, Is_checked);
-			if (map[_y + 1][_x]->ColorNumber == SearchColor)
+			BitAddition(&Map[_y + 1][_x]->Status, Is_checked);
+			if (Map[_y + 1][_x]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
 				CheckPuyo(_x, _y + 1);
@@ -138,12 +120,12 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	}
 
 	//左
-	if (_x - 1 > 0 && map[_y][_x - 1] != nullptr)
+	if (_x - 1 > 0 && Map[_y][_x - 1] != nullptr)
 	{
-		if (!BitChecker(map[_y][_x - 1]->Status, Is_checked))
+		if (!BitChecker(Map[_y][_x - 1]->Status, Is_checked))
 		{
-			BitAddition(&map[_y][_x - 1]->Status, Is_checked);
-			if (map[_y][_x - 1]->ColorNumber == SearchColor)
+			BitAddition(&Map[_y][_x - 1]->Status, Is_checked);
+			if (Map[_y][_x - 1]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
 				CheckPuyo(_x - 1, _y);
@@ -152,12 +134,12 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	}
 
 	//下
-	if (_y > 0 && map[_y - 1][_x] != nullptr)
+	if (_y > 0 && Map[_y - 1][_x] != nullptr)
 	{
-		if (!BitChecker(map[_y - 1][_x]->Status, Is_checked))
+		if (!BitChecker(Map[_y - 1][_x]->Status, Is_checked))
 		{
-			BitAddition(&map[_y - 1][_x]->Status, Is_checked);
-			if (map[_y - 1][_x]->ColorNumber == SearchColor)
+			BitAddition(&Map[_y - 1][_x]->Status, Is_checked);
+			if (Map[_y - 1][_x]->ColorNumber == SearchColor)
 			{
 				PuyoCounter++;
 				CheckPuyo(_x, _y - 1);
@@ -167,6 +149,29 @@ void SceneIngame::CheckPuyo(int _x, int _y)
 	return;
 }
 
+void SceneIngame::DeleteCounterAdd(COLORPATTERN _DeleteColor)
+{
+	DeleteCounter[_DeleteColor]++;
+}
+
+void SceneIngame::DeleteCounterReset()
+{
+	for (int i = 0; i < 7; i++)
+	{
+		DeleteCounter[i] = 0;
+	}
+}
+
+int SceneIngame::DeleteCounterSum()
+{
+	int AllDeletePuyos = 0;
+	for (int i = 0; i < 7; i++)
+	{
+		AllDeletePuyos += DeleteCounter[i];
+	}
+	return AllDeletePuyos;
+}
+
 void SceneIngame::DeleteStart()
 {
 	ArrangeRelation = ARRANGERELATION_REFALL;
@@ -174,7 +179,7 @@ void SceneIngame::DeleteStart()
 	{
 		for (int j = 1; j < 7; j++)
 		{
-			if (map[i][j] == nullptr) continue;
+			if (Map[i][j] == nullptr) continue;
 			PuyoCounter = 0;
 			CheckPuyo(j, i);
 			DeleteMarkSet();
@@ -182,10 +187,11 @@ void SceneIngame::DeleteStart()
 	}
 	VanishPuyo();
 
-	if (!DeletePuyoStatus) setSequence(&SceneIngame::FinishedVanish);
+	if (DeleteCounterSum() == 0) setSequence(&SceneIngame::FinishedVanish);
 	else
 	{
 		DelScoreCalc();
+		DeleteCounterReset();
 		ChainCounter++;
 		setSequence(&SceneIngame::Playing);
 	}
@@ -199,11 +205,11 @@ void SceneIngame::DeleteMarkSet()
 		{
 			for (int j = 1; j < 7; j++)
 			{
-				if (map[i][j] != nullptr)
+				if (Map[i][j] != nullptr)
 				{
-					if (BitChecker(map[i][j]->Status, Is_checked) && map[i][j]->ColorNumber == SearchColor)
+					if (BitChecker(Map[i][j]->Status, Is_checked) && Map[i][j]->ColorNumber == SearchColor)
 					{
-						BitAddition(&map[i][j]->Status, Will_Delete);
+						BitAddition(&Map[i][j]->Status, Will_Delete);
 					}
 				}
 			}
@@ -214,8 +220,8 @@ void SceneIngame::DeleteMarkSet()
 	{
 		for (int j = 1; j < 7; j++)
 		{
-			if (map[i][j] == nullptr) continue;
-			BitTakeaway(&map[i][j]->Status, Is_checked);
+			if (Map[i][j] == nullptr) continue;
+			BitTakeaway(&Map[i][j]->Status, Is_checked);
 		}
 	}
 }
@@ -224,29 +230,28 @@ void SceneIngame::DeleteMarkSet()
 
 void SceneIngame::VanishPuyo()
 {
-	DeletePuyoStatus = 0;
+
 	for (int i = 1; i < 15; i++)
 	{
 		for (int j = 1; j < 7; j++)
 		{
-			if (map[i][j] != nullptr)
+			if (Map[i][j] != nullptr)
 			{
-				if (BitChecker(map[i][j]->Status, Will_Delete))
+				if (BitChecker(Map[i][j]->Status, Will_Delete))
 				{
-					COLORPATTERN DelColor = map[i][j]->ColorNumber;
-					unsigned int ResultStatus = plusResultBit(DelColor, DeletePuyoStatus, 1);
-					DeletePuyoStatus = ResultStatus;
-					map[i][j] = nullptr;
+					COLORPATTERN DelColor = Map[i][j]->ColorNumber;
+					DeleteCounterAdd(DelColor);
+					Map[i][j] = nullptr;
 				}
 				else
 				{
-					COLORPATTERN RefallColor = map[i][j]->ColorNumber;
-					map[i][j] = nullptr;
+					COLORPATTERN RefallColor = Map[i][j]->ColorNumber;
+					Map[i][j] = nullptr;
 					Puyo* Refall = new Puyo(j, i, RefallColor);
 					BitAddition(&Refall->Status, Is_falling | Is_Freefall);
-					GameManager::getInstance()->addObject(Refall);
+					GameManager::GetInstance()->addObject(Refall);
 					Refall->setSequence(&Puyo::FreeFall);
-					map[i][j] = Refall;
+					Map[i][j] = Refall;
 				}
 			}
 		}
@@ -259,24 +264,19 @@ void SceneIngame::WaitingRestart()
 
 	if (getFrame() >= 60 && _Key)
 	{
-		GameManager::getInstance()->HighScore = HighScore;
-		instance = nullptr;
+		GameManager::GetInstance()->HighScore = HighScore;
+		Instance = nullptr;
 		glClear(GL_COLOR_BUFFER_BIT);//クリア（色情報）
-		GameManager::getInstance()->setSequence(&GameManager::Scene_Title);
+		GameManager::GetInstance()->setSequence(&GameManager::Scene_Title);
 	}
 
 }
 
 void SceneIngame::KeyJudge()
 {
-
-	cc = 0;
-
-	GameManager* Game = GameManager::getInstance();
+	GameManager* Game = GameManager::GetInstance();
 	if (_SpecialKey == GLUT_KEY_RIGHT || _Key == 'd')
 	{
-
-		cc = 1;
 
 		if (ArrangeRelation == ARRANGERELATION_VERTICAL || ArrangeRelation == ARRANGERELATION_COUNTERVERTICAL)
 		{
@@ -294,7 +294,6 @@ void SceneIngame::KeyJudge()
 
 	if (_SpecialKey == GLUT_KEY_LEFT || _Key == 'a')
 	{
-		cc = 1;
 
 		if (ArrangeRelation == ARRANGERELATION_VERTICAL || ArrangeRelation == ARRANGERELATION_COUNTERVERTICAL)
 		{
@@ -309,16 +308,10 @@ void SceneIngame::KeyJudge()
 			BitAddition(&KeyFlag, KeyFlag_LEFT);
 		}
 	}
-	if (_UpKey == 'j')
-	{
-		cc = 1;
-		BitAddition(&KeyFlag, KeyFlag_Turn_CounterClockwise);
-	}
-	if (_UpKey == 'k')
-	{
-		cc = 1;
-		BitAddition(&KeyFlag, KeyFlag_Turn_Clockwise);
-	}
+	if (_UpKey == 'j')	BitAddition(&KeyFlag, KeyFlag_Turn_CounterClockwise);
+	
+	if (_UpKey == 'k')	BitAddition(&KeyFlag, KeyFlag_Turn_Clockwise);
+
 	if (_SpecialKey == GLUT_KEY_DOWN || _Key == 's')
 	{
 		ScoreCounter++;
@@ -338,7 +331,7 @@ void SceneIngame::Playing()
 		WaitingRestart();
 		setSequence(&SceneIngame::WaitingRestart);
 	}
-	if (GameManager::getInstance()->getObject().size() == 0)
+	if (GameManager::GetInstance()->getObject().size() == 0)
 	{
 		setSequence(&SceneIngame::DeleteStart);
 	}
@@ -354,9 +347,9 @@ void SceneIngame::FinishedVanish()
 
 void SceneIngame::update()
 {
-	if (GameManager::getInstance()->getObject().size() == 1)
+	if (GameManager::GetInstance()->getObject().size() == 1)
 	{
-		Puyo* puyoit = dynamic_cast<Puyo*>(*GameManager::getInstance()->getObjectsIterator());
+		Puyo* puyoit = dynamic_cast<Puyo*>(*GameManager::GetInstance()->getObjectsIterator());
 		if (puyoit->getSequence() == &Puyo::Fall)
 		{
 			puyoit->setSequence(&Puyo::FreeFall);
@@ -367,15 +360,14 @@ void SceneIngame::update()
 
 void SceneIngame::DelScoreCalc()
 {
-	//TODO スコア計算　まだ4色までしか対応してない
-	const unsigned int VanishedPuyo = DeletePuyoStatus;
+	const int VanishedPuyo = DeleteCounterSum();
 	const int ChainNum = ChainCounter;
 	const int ChainBonusBox[20] = { 0,8,16,32,64,96,128,160,192,224,256,288,320,352,388,416,448,480,512,512 };
 	int PlusScore = 0;
 	int ChainBonus = 0;
-	int ColorResultStatus[4] = { 0 };
 	int VanishedNum = 0;
 	int VanishNumBonus = 0;
+	const int VanishNumBonusBox[12] = { 0,0,0,0,0,2,3,4,5,6,7,10 };
 	int VanishColorsNum = 0;
 	int VanishColorsBonus = 0;
 	const int VanishColorsBonusBox[7] = { 0,0,3,6,12,2400,48000 };
@@ -383,23 +375,16 @@ void SceneIngame::DelScoreCalc()
 	if (ChainNum >= 19) ChainBonus = ChainBonusBox[19];
 	else ChainBonus = ChainBonusBox[ChainNum];
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 7; i++)
 	{
-		ColorResultStatus[i] = ColBitPicker((COLORPATTERN)i, VanishedPuyo);
-		if (ColorResultStatus[i])
+		if (DeleteCounter[i])
 		{
-			VanishedNum += ColorResultStatus[i];
-			AllVanishedNum += ColorResultStatus[i];
+			VanishedNum += DeleteCounter[i];
+			AllVanishedNum += DeleteCounter[i];
 			VanishColorsNum++;
 		}
-		if (ColorResultStatus[i] <= 4) continue;
-		if (ColorResultStatus[i] == 5) VanishNumBonus += 2;
-		if (ColorResultStatus[i] == 6) VanishNumBonus += 3;
-		if (ColorResultStatus[i] == 7) VanishNumBonus += 4;
-		if (ColorResultStatus[i] == 8) VanishNumBonus += 5;
-		if (ColorResultStatus[i] == 9) VanishNumBonus += 6;
-		if (ColorResultStatus[i] == 10) VanishNumBonus += 7;
-		if (ColorResultStatus[i] >= 11) VanishNumBonus += 10;
+		if (DeleteCounter[i] >= 11) VanishNumBonus += VanishNumBonusBox[11];
+		else VanishNumBonus += VanishNumBonusBox[DeleteCounter[i]];
 	}
 
 	VanishColorsBonus = VanishColorsBonusBox[VanishColorsNum];
@@ -427,7 +412,7 @@ void SceneIngame::UIDisp()
 		0,                  // ボーダー処理 (GLint border)
 		GL_RGB,             // ピクセルフォーマット (GLenum format)
 		GL_UNSIGNED_BYTE,   // 各ピクセルのデータ型 (GLenum type)
-		GameManager::getInstance()->pixels);            // const GLvoid *pixels
+		GameManager::GetInstance()->BrickPixels);            // const GLvoid *BrickPixels
 
 							//テクスチャフィルター設定 (テクスチャ描画時必須)
 							//_________________________________________________
@@ -598,10 +583,10 @@ void SceneIngame::display()
 	{
 		for (int j = 1; j < 7; j++)
 		{
-			if (map[i][j] == nullptr) continue;
+			if (Map[i][j] == nullptr) continue;
 			glPushMatrix();
 			{
-				glColor4f(map[i][j]->colorStatus[0], map[i][j]->colorStatus[1], map[i][j]->colorStatus[2], map[i][j]->colorStatus[3]);
+				glColor4f(Map[i][j]->colorStatus[0], Map[i][j]->colorStatus[1], Map[i][j]->colorStatus[2], Map[i][j]->colorStatus[3]);
 				glTranslatef(-0.7 + (j - 1)*0.15, -0.75 + (i - 1)*0.15, 1);
 				glutSolidSphere(0.075, 180, 5);
 			}

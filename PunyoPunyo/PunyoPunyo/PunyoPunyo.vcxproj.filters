@@ -34,9 +34,6 @@
       <Filter>Game</Filter>
     </ClInclude>
     <ClInclude Include="..\Program\glut.h" />
-    <ClInclude Include="..\Program\Game\BitCalc.h">
-      <Filter>Game</Filter>
-    </ClInclude>
     <ClInclude Include="..\Program\Liblary\BitController.h">
       <Filter>Liblary</Filter>
     </ClInclude>
@@ -59,9 +56,6 @@
       <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="..\Program\Game\Source.cpp">
-      <Filter>Game</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Program\Game\BitCalc.cpp">
       <Filter>Game</Filter>
     </ClCompile>
     <ClCompile Include="..\Program\Liblary\BitController.cpp">

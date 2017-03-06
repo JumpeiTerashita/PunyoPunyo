@@ -9,39 +9,38 @@
 #include "../Liblary/BitController.h"
 #include "../Engine/DrawString.h"
 
-GameManager* GameManager::instance = nullptr;
-SceneIngame* SceneIngame::instance = nullptr;
+GameManager* GameManager::Instance = nullptr;
+SceneIngame* SceneIngame::Instance = nullptr;
 
 GameManager::GameManager() {
 	HighScore = 877;
 	SelectDifficulty = 0;
 	KeyEventReset();
 
-	pFile = fopen(
+	Brick = fopen(
 		"Brick.data", // const char * _Filename
 		"rb");      // const char * _Mode
 
-	if (!pFile) setSequence(&GameManager::Scene_ReadError);
+	if (!Brick) setSequence(&GameManager::Scene_ReadError);
 	else
 	{
 		fread(
-			pixels,        // void * _DstBuf
+			BrickPixels,        // void * _DstBuf
 			300 * 300 * 3, // size_t _ElementSize
 			1,          // size_t _Count
-			pFile);     // FILE * _File
+			Brick);     // FILE * _File
 
 
-		fclose(pFile);// FILE * _File
+		fclose(Brick);// FILE * _File
 		setSequence(&GameManager::Scene_Title);
 	}
-
 };
 
-GameManager* GameManager::getInstance() {
-	if (nullptr == GameManager::instance) {
-		GameManager::instance = new GameManager();
+GameManager* GameManager::GetInstance() {
+	if (nullptr == GameManager::Instance) {
+		GameManager::Instance = new GameManager();
 	}
-	return GameManager::instance;
+	return GameManager::Instance;
 }
 
 void GameManager::Scene_ReadError()
@@ -54,6 +53,7 @@ void GameManager::Scene_ReadError()
 
 void GameManager::Scene_Title()
 {
+	SelectDifficulty = 0;
 	if (_Key)
 	{
 		KeyEventReset();
@@ -78,6 +78,7 @@ void GameManager::Scene_DifficultySelect()
 	else if (_Key)
 	{
 		KeyEventReset();
+		SceneIngame::GetInstance()->SetDifficulty(SelectDifficulty);
 		setSequence(&GameManager::Scene_Ingame);
 	}
 }
@@ -85,13 +86,13 @@ void GameManager::Scene_DifficultySelect()
 void GameManager::Scene_Ingame()
 {
 	objects.sort(sortPosYPriority);
-	SceneIngame::getInstance()->update();
+	SceneIngame::GetInstance()->update();
 
-	SceneIngame* Scene = SceneIngame::getInstance();
+	SceneIngame* Scene = SceneIngame::GetInstance();
 	if (BitChecker(Scene->KeyFlag, KeyFlag_LEFT)) objects.sort(sortPosXPriority_Ascending);
 	if (BitChecker(Scene->KeyFlag, KeyFlag_RIGHT)) objects.sort(sortPosXPriority_Descending);
 
-	std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
+	std::list< GameObject* >::iterator it = GameManager::GetInstance()->objects.begin();
 
 	while (it != objects.end()) {
 		(*it)->ObjUpdate();
@@ -110,11 +111,11 @@ void GameManager::Scene_Ingame()
 
 bool GameManager::MoveSearch(int lookX)
 {
-	SceneIngame* Scene = SceneIngame::getInstance();
-	std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
+	SceneIngame* Scene = SceneIngame::GetInstance();
+	std::list< GameObject* >::iterator it = GameManager::GetInstance()->objects.begin();
 
 	while (it != objects.end()) {
-		if (Scene->map[(*it)->pos._y][(*it)->pos._x + lookX] != nullptr) return false;
+		if (Scene->Map[(*it)->pos._y][(*it)->pos._x + lookX] != nullptr) return false;
 		it++;
 	}
 
@@ -272,11 +273,9 @@ void GameManager::display()
 
 		glLoadIdentity();
 
-		SceneIngame::getInstance()->display();
+		SceneIngame::GetInstance()->display();
 
-		//objects.sort(sortRenderPriority);
-
-		std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
+		std::list< GameObject* >::iterator it = GameManager::GetInstance()->objects.begin();
 
 		while (it != objects.end()) {
 			(*it)->ObjDisp();
@@ -288,9 +287,9 @@ void GameManager::display()
 
 }
 
-void GameManager::glColorSetup(int _colorNumber)
+void GameManager::glColorSetup(int _ColorNumber)
 {
-	switch (_colorNumber)
+	switch (_ColorNumber)
 	{
 	case COLOR_RED:
 		glColor4f(1, 0, 0, 1);

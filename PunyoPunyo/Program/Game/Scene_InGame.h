@@ -27,30 +27,27 @@ public:
 	SceneIngame();
 	~SceneIngame();
 
-	static SceneIngame* getInstance();
+	static SceneIngame* GetInstance();
 
-	int cc; //デバッグ用　ぷよ処理通過カウンタ
-
-	unsigned int DeletePuyoStatus; //(赤,緑,青,黄色)*8ビット
-	
-	Puyo* map[15][8];
-	int ScoreCounter;
-	int FallLimit;
-	bool GameOver;
-
-	void PuyoCreate();
-	void CreatedMap();
 	void update();
 	void display();
+
+	int DeleteCounter[7]; 
+	
+	Puyo* Map[15][8];
+	int ScoreCounter;
+	int FallLimit;
+	int HighScore;
+	bool GameOver;
+	void PuyoCreate();
+	void CreatedMap();
+	void WriteMap(int _x, int _y, COLORPATTERN _SetColor);
 	void Playing();
 	void KeyJudge();
-
-	int HighScore;
-
-	
 	unsigned char KeyFlag;
-
 	TURNPATTERN ArrangeRelation;
+
+	inline void SetDifficulty(int _Difficulty) { Difficulty = _Difficulty; }
 
 private:
 	int Difficulty;
@@ -68,12 +65,14 @@ private:
 	Puyo* First;
 	Puyo* Second;
 
-	
+	void DeleteCounterReset();
+	void DeleteCounterAdd(COLORPATTERN _DeleteColor);
+	int DeleteCounterSum();
 
 	void UIDisp();
 	void DelScoreCalc();
 
-	static SceneIngame* instance;
+	static SceneIngame* Instance;
 };
 
 extern unsigned char _Key;

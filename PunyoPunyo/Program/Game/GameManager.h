@@ -19,14 +19,12 @@ class GameManager :public Sequence<GameManager>
 public:
 	GameManager();
 	~GameManager() {};
-	static GameManager* getInstance();
+	static GameManager* GetInstance();
 
-	inline void addObject(GameObject* object) {
-		objects.push_back(object);
-	}
+	inline void addObject(GameObject* object) { objects.push_back(object);}
 
-	unsigned char* pixels = (unsigned char*)malloc(300 * 300 * 3);
-	FILE *pFile;
+	unsigned char* BrickPixels = (unsigned char*)malloc(300 * 300 * 3);
+	FILE* Brick;
 
 	void Scene_ReadError();
 	void Scene_Title();
@@ -41,16 +39,13 @@ public:
 	int HighScore;
 	int SelectDifficulty;
 
-	void glColorSetup(int _colorNumber);
+	void glColorSetup(int _ColorNumber);
 
-	inline std::list< GameObject* > getObject()
-	{
-		return objects;
-	}
+	inline std::list< GameObject* > getObject(){ return objects; }
 
 	inline std::list< GameObject* >::iterator getObjectsIterator() 
 	{
-		std::list< GameObject* >::iterator it = GameManager::getInstance()->objects.begin();
+		std::list< GameObject* >::iterator it = GameManager::GetInstance()->objects.begin();
 		return it;
 	}
 
@@ -65,7 +60,8 @@ public:
 	}
 
 private:
-	static GameManager* instance;
+	
+	static GameManager* Instance;
 	std::list< GameObject* > objects;
 	
 	static bool sortPosYPriority(const GameObject* objA, const GameObject* objB) 

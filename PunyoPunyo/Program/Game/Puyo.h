@@ -12,7 +12,7 @@ enum COLORPATTERN
 	COLOR_PURPLE,
 	COLOR_LIGHTBLUE,
 	COLOR_ORANGE,
-	COLOR_MAX
+	COLOR_NULL
 };
 
 enum STATUS
@@ -29,8 +29,8 @@ class Puyo :public GameObject, public Sequence<Puyo>
 public:
 
 	Puyo() {};
-	Puyo(int _x, int _y,int _colors);
-	Puyo(int _x, int _y, COLORPATTERN _setColor);
+	Puyo(int _x, int _y,int _Colors);
+	Puyo(int _x, int _y, COLORPATTERN _SetColor);
 	~Puyo() {};
 	COLORPATTERN ColorNumber;
 	unsigned char Status; //ぷよ状態フラグ　(enum STATUS)
@@ -45,16 +45,14 @@ public:
 	void ColorSetup(COLORPATTERN _colorNumber);
 	
 private:
-	void delMap(int _x, int _y);
-	void map(int _x, int _y, COLORPATTERN _setColor);
 	bool Search_There_is(int _x, int _y);
 	bool Search_is_Falling(int _x, int _y);
-	//TODO ColorSetup　ダサい！！！
 	
 	void TurnCounterClockwise();
 	void TurnClockwise();
 	bool UnderCollision();
 
+	
 };
 
 extern unsigned long genrand_int32(void);

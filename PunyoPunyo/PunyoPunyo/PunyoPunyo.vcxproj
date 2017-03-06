@@ -113,7 +113,6 @@
     <ClInclude Include="..\Program\Engine\DrawString.h" />
     <ClInclude Include="..\Program\Engine\GameObject.h" />
     <ClInclude Include="..\Program\Engine\InputManager.h" />
-    <ClInclude Include="..\Program\Game\BitCalc.h" />
     <ClInclude Include="..\Program\Game\GameManager.h" />
     <ClInclude Include="..\Program\Game\Puyo.h" />
     <ClInclude Include="..\Program\Game\Scene_InGame.h" />
@@ -126,7 +125,6 @@
   <ItemGroup>
     <ClCompile Include="..\Program\Engine\InputManager.cpp" />
     <ClCompile Include="..\Program\Engine\DrawString.cpp" />
-    <ClCompile Include="..\Program\Game\BitCalc.cpp" />
     <ClCompile Include="..\Program\Game\GameManager.cpp" />
     <ClCompile Include="..\Program\Game\Puyo.cpp" />
     <ClCompile Include="..\Program\Game\Scene_InGame.cpp" />
